@@ -332,7 +332,7 @@ define(function (require, exports, module) {
                 terms.push(_modifiers.join(" "));
             }
             // name
-            terms.push(elem.name);
+            terms.push("$"+elem.name);
             // initial value
             if (elem.defaultValue && elem.defaultValue.length > 0) {
                 terms.push("= " + elem.defaultValue);
