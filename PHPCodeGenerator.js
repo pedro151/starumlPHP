@@ -380,11 +380,11 @@ define(function (require, exports, module) {
                 var i, len;
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
-                    var s = this.getType(p) + " " + p.name;
+                    var s = this.getType(p) + " $" + p.name;
                     if (p.isReadOnly === true) {
                         s = "final " + s;
                     }
-                    paramTerms.push("$"+s);
+                    paramTerms.push(s);
                 }
             }
             terms.push(elem.name + "(" + paramTerms.join(", ") + ")");
