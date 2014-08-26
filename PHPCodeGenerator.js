@@ -231,7 +231,7 @@ define(function (require, exports, module) {
      * @return {string}
      */
     PHPCodeGenerator.prototype.getType = function (elem) {
-        var _type = "mixed";
+        var _type = "";
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
@@ -309,7 +309,7 @@ define(function (require, exports, module) {
             if (visibility) {
                 terms.push(visibility);
             }
-            terms.push(elem.name + "()");
+            terms.push("function __construct()");
             codeWriter.writeLine(terms.join(" ") + " {");
             codeWriter.writeLine("}");
         }
@@ -331,8 +331,6 @@ define(function (require, exports, module) {
             if (_modifiers.length > 0) {
                 terms.push(_modifiers.join(" "));
             }
-            // type
-            terms.push(this.getType(elem));
             // name
             terms.push(elem.name);
             // initial value
@@ -373,12 +371,8 @@ define(function (require, exports, module) {
                 terms.push(_modifiers.join(" "));
             }
             
-            // type
-            if (returnParam) {
-                terms.push(this.getType(returnParam));
-            } else {
-                terms.push("mixed");
-            }
+            terms.push("function");
+            
             
             // name + parameters
             var paramTerms = [];
