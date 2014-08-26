@@ -22,7 +22,7 @@
  */
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, regexp: true */
-/*global define, $, _, window, staruml, type, document, java7 */
+/*global define, $, _, window, staruml, type, document, php7 */
 
 define(function (require, exports, module) {
     "use strict";
@@ -267,7 +267,7 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.writeDoc = function (codeWriter, text, options) {
         var i, len, lines;
-        if (options.javaDoc && _.isString(text)) {
+        if (options.phpDoc && _.isString(text)) {
             lines = text.trim().split("\n");
             codeWriter.writeLine("/**");
             for (i = 0, len = lines.length; i < len; i++) {
@@ -384,7 +384,7 @@ define(function (require, exports, module) {
                     if (p.isReadOnly === true) {
                         s = "final " + s;
                     }
-                    paramTerms.push(s);
+                    paramTerms.push("$"+s);
                 }
             }
             terms.push(elem.name + "(" + paramTerms.join(", ") + ")");
