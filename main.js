@@ -49,8 +49,7 @@ define(function (require, exports, module) {
      */
     var CMD_PHP           = 'php',
         CMD_PHP_GENERATE  = 'php.generate',
-        CMD_JAVA_REVERSE   = 'java.reverse',
-        CMD_JAVA_CONFIGURE = 'java.configure';
+        CMD_PHP_CONFIGURE = 'php.configure';
 
     /**
      * Command Handler for PHP Generate
@@ -158,13 +157,13 @@ define(function (require, exports, module) {
     // Register Commands
     CommandManager.register("PHP",             CMD_PHP,           CommandManager.doNothing);
     CommandManager.register("Generate Code...", CMD_PHP_GENERATE,  _handleGenerate);
-    CommandManager.register("Configure...",     CMD_JAVA_CONFIGURE, _handleConfigure);
+    CommandManager.register("Configure...",     CMD_PHP_CONFIGURE, _handleConfigure);
 
     var menu, menuItem;
     menu = MenuManager.getMenu(Commands.TOOLS);
     menuItem = menu.addMenuItem(CMD_PHP);
     menuItem.addMenuItem(CMD_PHP_GENERATE);
     menuItem.addMenuDivider();
-    menuItem.addMenuItem(CMD_JAVA_CONFIGURE);
+    menuItem.addMenuItem(CMD_PHP_CONFIGURE);
 
 });
