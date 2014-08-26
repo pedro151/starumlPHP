@@ -158,14 +158,12 @@ define(function (require, exports, module) {
     // Register Commands
     CommandManager.register("PHP",             CMD_PHP,           CommandManager.doNothing);
     CommandManager.register("Generate Code...", CMD_PHP_GENERATE,  _handleGenerate);
-    CommandManager.register("Reverse Code...",  CMD_JAVA_REVERSE,   _handleReverse);
     CommandManager.register("Configure...",     CMD_JAVA_CONFIGURE, _handleConfigure);
 
     var menu, menuItem;
     menu = MenuManager.getMenu(Commands.TOOLS);
     menuItem = menu.addMenuItem(CMD_PHP);
     menuItem.addMenuItem(CMD_PHP_GENERATE);
-    menuItem.addMenuItem(CMD_JAVA_REVERSE);
     menuItem.addMenuDivider();
     menuItem.addMenuItem(CMD_JAVA_CONFIGURE);
 

@@ -110,8 +110,6 @@ define(function (require, exports, module) {
                 codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
                 this.writePackageDeclaration(codeWriter, elem, options);
                 codeWriter.writeLine();
-                codeWriter.writeLine("import java.util.*;");
-                codeWriter.writeLine();
                 this.writeAnnotationType(codeWriter, elem, options);
                 file = FileSystem.getFileForPath(fullPath);
                 FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
@@ -121,8 +119,6 @@ define(function (require, exports, module) {
                 fullPath = path + "/" + elem.name + ".class.php";
                 codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
                 this.writePackageDeclaration(codeWriter, elem, options);
-                codeWriter.writeLine();
-                codeWriter.writeLine("import java.util.*;");
                 codeWriter.writeLine();
                 this.writeClass(codeWriter, elem, options);
                 file = FileSystem.getFileForPath(fullPath);
@@ -134,8 +130,6 @@ define(function (require, exports, module) {
             fullPath = path + "/" + elem.name + ".interface.php";
             codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
             this.writePackageDeclaration(codeWriter, elem, options);
-            codeWriter.writeLine();
-            codeWriter.writeLine("import java.util.*;");
             codeWriter.writeLine();
             this.writeInterface(codeWriter, elem, options);
             file = FileSystem.getFileForPath(fullPath);
@@ -237,7 +231,7 @@ define(function (require, exports, module) {
      * @return {string}
      */
     PHPCodeGenerator.prototype.getType = function (elem) {
-        var _type = "void";
+        var _type = "mixed";
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
