@@ -590,9 +590,6 @@ define(function (require, exports, module) {
                     this.writeClass(codeWriter, def, options);
                 }
                 codeWriter.writeLine();
-            } else if (def instanceof type.UMLInterface) {
-                this.writeInterface(codeWriter, def, options);
-                codeWriter.writeLine();
             } else if (def instanceof type.UMLEnumeration) {
                 this.writeEnum(codeWriter, def, options);
                 codeWriter.writeLine();
