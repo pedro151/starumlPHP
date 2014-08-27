@@ -336,7 +336,12 @@ define(function (require, exports, module) {
 			}
             // initial value
             if (elem.defaultValue && elem.defaultValue.length > 0) {
-                terms.push("= " + elem.defaultValue);
+				var elementValue = elem.defaultValue;
+				if(_.isString(elem.defaultValue))
+				{
+					elementValue = "\""+elementValue+"\"";
+				}
+                terms.push("= " + elementValue);
             }
             codeWriter.writeLine(terms.join(" ") + ";");
         }
@@ -382,9 +387,7 @@ define(function (require, exports, module) {
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
                     var s = "$" + p.name;
-                    if (p.isReadOnly === true) {
-                        s = "final " + s;
-                    }
+            
                     paramTerms.push(s);
                 }
             }
