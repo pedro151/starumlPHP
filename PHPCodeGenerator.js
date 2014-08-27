@@ -336,12 +336,7 @@ define(function (require, exports, module) {
 			}
             // initial value
             if (elem.defaultValue && elem.defaultValue.length > 0) {
-				var elementValue = elem.defaultValue;
-				if(_.isString(elem.defaultValue))
-				{
-					elementValue = "\""+elementValue+"\"";
-				}
-                terms.push("= " + elementValue);
+                terms.push("= " + elem.defaultValue);
             }
             codeWriter.writeLine(terms.join(" ") + ";");
         }
