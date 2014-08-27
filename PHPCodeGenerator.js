@@ -292,7 +292,7 @@ define(function (require, exports, module) {
      * @param {Object} options     
      */
     PHPCodeGenerator.prototype.writeConstructor = function (codeWriter, elem, options) {
-        if (elem.name.length > 0 | elem.operations.indexOf("__construct") === 0) {
+        if (elem.name.length > 0 && elem.operations.indexOf("__construct") === 0) {
 			
             var terms = [];
             // Doc
