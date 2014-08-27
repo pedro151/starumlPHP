@@ -293,7 +293,7 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.writeConstructor = function (codeWriter, elem, options) {
 		var haveConstruct = false;
-        for (i = 0, len = elem.operations.length; i < len; i++) {
+        for (var i = 0, len = elem.operations.length; i < len; i++) {
          if(elem.operations[i].name === "__construct")
 		 {
 			haveConstruct =true;
