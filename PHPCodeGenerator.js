@@ -319,13 +319,21 @@ define(function (require, exports, module) {
             // doc
 			var doc = "@var " + this.getType (elem) + " " + elem.documentation.trim();
             this.writeDoc(codeWriter, doc, options);
-            // modifiers
-            var _modifiers = this.getModifiers(elem);
-            if (_modifiers.length > 0) {
-                terms.push(_modifiers.join(" "));
-            }
-            // name
-            terms.push("$"+elem.name);
+			
+			// modifiers const
+			if (elem.isFinalSpecification === true || elem.isLeaf === true) {
+				terms.push("const " + elem.name.toUpperCase ());
+			}
+			else
+			{
+				// modifiers
+				var _modifiers = this.getModifiers(elem);
+				if (_modifiers.length > 0) {
+					terms.push(_modifiers.join(" "));
+				}
+				// name
+				terms.push("$"+elem.name);
+			}
             // initial value
             if (elem.defaultValue && elem.defaultValue.length > 0) {
                 terms.push("= " + elem.defaultValue);
@@ -389,7 +397,7 @@ define(function (require, exports, module) {
                 codeWriter.writeLine(terms.join(" ") + " {");
                 codeWriter.indent();
                 codeWriter.writeLine("// TODO implement here");
-                
+               
                 // return statement
                 if (returnParam) {
                     var returnType = this.getType(returnParam);
@@ -401,7 +409,7 @@ define(function (require, exports, module) {
                         codeWriter.writeLine("return 0.0;");
                     } else if (returnType === "char") {
                         codeWriter.writeLine("return '0';");
-                    } else if (returnType === "String") {
+                    } else if (returnType === "string") {
                         codeWriter.writeLine('return "";');
                     } else {
                         codeWriter.writeLine("return null;");
