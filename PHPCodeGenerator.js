@@ -231,7 +231,7 @@ define(function (require, exports, module) {
      * @return {string}
      */
     PHPCodeGenerator.prototype.getType = function (elem) {
-        var _type = "";
+        var _type = "void";
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
@@ -245,16 +245,8 @@ define(function (require, exports, module) {
             }
         }
         // multiplicity
-        if (elem.multiplicity) {
-            if (_.contains(["0..*", "1..*", "*"], elem.multiplicity.trim())) {
-                if (elem.isOrdered === true) {
-                    _type = "array(" + _type + ")";
-                } else {
-                    _type = "array(" + _type + ")";
-                }
-            } else if (elem.multiplicity.match(/^\d+$/)) { // number
+        if (elem.multiplicity && _type !== "void") {
                 _type += "[]";
-            }
         }
         return _type;
     };
@@ -325,7 +317,8 @@ define(function (require, exports, module) {
         if (elem.name.length > 0) {
             var terms = [];
             // doc
-            this.writeDoc(codeWriter, elem.documentation, options);
+			var doc = "@var " + this.getType (elem) + " " + elem.documentation.trim();
+            this.writeDoc(codeWriter, doc, options);
             // modifiers
             var _modifiers = this.getModifiers(elem);
             if (_modifiers.length > 0) {
@@ -358,10 +351,10 @@ define(function (require, exports, module) {
             // doc
             var doc = elem.documentation.trim();
             _.each(params, function (param) {
-                doc += "\n@param " + param.name + " " + param.documentation;
+                doc += "\n@param " + this.getType(param) + " " + param.name + " " + param.documentation;
             });
             if (returnParam) {
-                doc += "\n@return " + returnParam.documentation;
+                doc += "\n@return "+ this.getType(returnParam) + " " + returnParam.documentation;
             }
             this.writeDoc(codeWriter, doc, options);
             
@@ -380,7 +373,7 @@ define(function (require, exports, module) {
                 var i, len;
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
-                    var s = this.getType(p) + " $" + p.name;
+                    var s = "$" + p.name;
                     if (p.isReadOnly === true) {
                         s = "final " + s;
                     }
@@ -404,10 +397,8 @@ define(function (require, exports, module) {
                         codeWriter.writeLine("return false;");
                     } else if (returnType === "int" || returnType === "long" || returnType === "short" || returnType === "byte") {
                         codeWriter.writeLine("return 0;");
-                    } else if (returnType === "float") {
-                        codeWriter.writeLine("return 0.0f;");
-                    } else if (returnType === "double") {
-                        codeWriter.writeLine("return 0.0d;");
+                    } else if (returnType === "float" || eturnType === "double") {
+                        codeWriter.writeLine("return 0.0;");
                     } else if (returnType === "char") {
                         codeWriter.writeLine("return '0';");
                     } else if (returnType === "String") {
@@ -443,9 +434,6 @@ define(function (require, exports, module) {
         var _modifiers = this.getModifiers(elem);
         if (_.some(elem.operations, function (op) { return op.isAbstract === true; })) {
             _modifiers.push("abstract");
-        }
-        if (_modifiers.length > 0) {
-            terms.push(_modifiers.join(" "));
         }
         
         // Class
