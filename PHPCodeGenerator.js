@@ -397,7 +397,7 @@ define(function (require, exports, module) {
                         codeWriter.writeLine("return false;");
                     } else if (returnType === "int" || returnType === "long" || returnType === "short" || returnType === "byte") {
                         codeWriter.writeLine("return 0;");
-                    } else if (returnType === "float" || eturnType === "double") {
+                    } else if (returnType === "float" || returnType === "double") {
                         codeWriter.writeLine("return 0.0;");
                     } else if (returnType === "char") {
                         codeWriter.writeLine("return '0';");
