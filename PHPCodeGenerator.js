@@ -299,7 +299,9 @@ define(function (require, exports, module) {
 			haveConstruct =true;
 		 };
         }
-        if (elem.name.length > 0 && !haveConstruct) {
+        var _extends = this.getSuperClasses(elem);
+ 
+        if (elem.name.length > 0 && ( !haveConstruct | _extends.length <= 0 ) ) {
 			
             var terms = [];
             // Doc
