@@ -301,19 +301,22 @@ define(function (require, exports, module) {
         }
         var _extends = this.getSuperClasses(elem);
  
-        if (elem.name.length > 0 && ( !haveConstruct | _extends.length <= 0 ) ) {
-			
-            var terms = [];
-            // Doc
-            this.writeDoc(codeWriter, elem.documentation, options);
-            // Visibility
-            var visibility = this.getVisibility(elem);
-            if (visibility) {
-                terms.push(visibility);
-            }
-            terms.push("function __construct()");
-            codeWriter.writeLine(terms.join(" ") + " {");
-            codeWriter.writeLine("}");
+        if (elem.name.length > 0 && _extends.length <= 0 ) 
+		{
+			if(!haveConstruct)
+			{
+				var terms = [];
+				// Doc
+				this.writeDoc(codeWriter, elem.documentation, options);
+				// Visibility
+				var visibility = this.getVisibility(elem);
+				if (visibility) {
+					terms.push(visibility);
+				}
+				terms.push("function __construct()");
+				codeWriter.writeLine(terms.join(" ") + " {");
+				codeWriter.writeLine("}");
+			}
         }
     };
 
