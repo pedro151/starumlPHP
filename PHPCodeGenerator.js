@@ -174,17 +174,14 @@ define(function (require, exports, module) {
         return null;
     };
 
-    /**
+	 /**
      * Collect modifiers of a given element.
      * @param {type.Model} elem
      * @return {Array.<string>}
      */
-    PHPCodeGenerator.prototype.getModifiers = function (elem) {
+    PHPCodeGenerator.prototype.getModifiersClass = function (elem) {
         var modifiers = [];
-        var visibility = this.getVisibility(elem);
-        if (visibility) {
-            modifiers.push(visibility);
-        }
+ 
         if (elem.isStatic === true) {
             modifiers.push("static");
         }
@@ -202,6 +199,21 @@ define(function (require, exports, module) {
         // strictfp
         // const
         // native
+        return modifiers;
+    };
+    /**
+     * Collect modifiers of a given element.
+     * @param {type.Model} elem
+     * @return {Array.<string>}
+     */
+    PHPCodeGenerator.prototype.getModifiers = function (elem) {
+        var modifiers = [];
+        var visibility = this.getVisibility(elem);
+        if (visibility) {
+            modifiers.push(visibility);
+        }
+		modifiers.join( this.getModifiersClass (elem) );
+
         return modifiers;
     };
 
@@ -474,11 +486,11 @@ define(function (require, exports, module) {
         }
         this.writeDoc(codeWriter, doc, options);
         
-        // modifiers
-		var _modifiers = this.getModifiers(elem);
-		if (_modifiers.length > 0) {
-			terms.push(_modifiers.join(" "));
-		}
+        // Modifiers
+        var _modifiers = this.getModifiersClass (elem);
+        if (_modifiers.length > 0) {
+            terms.push(_modifiers.join(" "));
+        }
         
         // Class
         terms.push("class");
@@ -681,11 +693,12 @@ define(function (require, exports, module) {
         }
         this.writeDoc(codeWriter, doc, options);
         
-         // Modifiers
-		var _modifiers = this.getModifiers(elem);
-		if (_modifiers.length > 0) {
-			terms.push(_modifiers.join(" "));
-		}
+        // Modifiers
+        var _modifiers = this.getModifiersClass (elem);
+
+        if (_modifiers.length > 0) {
+            terms.push(_modifiers.join(" "));
+        }
         
         // AnnotationType
         terms.push("@interface");
