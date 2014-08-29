@@ -108,6 +108,7 @@ define(function (require, exports, module) {
             if (elem.stereotype === "annotationType") {
                 fullPath = path + "/" + elem.name + ".php";
                 codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
+				codeWriter.writeLine("<?php\n");
                 this.writePackageDeclaration(codeWriter, elem, options);
                 codeWriter.writeLine();
                 this.writeAnnotationType(codeWriter, elem, options);
@@ -118,6 +119,7 @@ define(function (require, exports, module) {
             } else {
                 fullPath = path + "/" + elem.name + ".class.php";
                 codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
+				codeWriter.writeLine("<?php\n");
                 this.writePackageDeclaration(codeWriter, elem, options);
                 codeWriter.writeLine();
                 this.writeClass(codeWriter, elem, options);
@@ -129,6 +131,7 @@ define(function (require, exports, module) {
         } else if (elem instanceof type.UMLInterface) {
             fullPath = path + "/" + elem.name + ".interface.php";
             codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
+			codeWriter.writeLine("<?php\n");
             this.writePackageDeclaration(codeWriter, elem, options);
             codeWriter.writeLine();
             this.writeInterface(codeWriter, elem, options);
@@ -139,6 +142,7 @@ define(function (require, exports, module) {
         } else if (elem instanceof type.UMLEnumeration) {
             fullPath = path + "/" + elem.name + ".php";
             codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
+			codeWriter.writeLine("<?php\n");
             this.writePackageDeclaration(codeWriter, elem, options);
             codeWriter.writeLine();
             this.writeEnum(codeWriter, elem, options);
@@ -269,7 +273,7 @@ define(function (require, exports, module) {
         }
     };
 	
-	    /**
+	 /**
      * Write Spacification
      * @param {StringWriter} codeWriter
      * @param {string} text
