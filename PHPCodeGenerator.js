@@ -474,11 +474,11 @@ define(function (require, exports, module) {
         }
         this.writeDoc(codeWriter, doc, options);
         
-        // Modifiers
-        var _modifiers = this.getModifiers(elem);
-        if (_.some(elem.operations, function (op) { return op.isAbstract === true; })) {
-            _modifiers.push("abstract");
-        }
+        // modifiers
+		var _modifiers = this.getModifiers(elem);
+		if (_modifiers.length > 0) {
+			terms.push(_modifiers.join(" "));
+		}
         
         // Class
         terms.push("class");
@@ -681,14 +681,11 @@ define(function (require, exports, module) {
         }
         this.writeDoc(codeWriter, doc, options);
         
-        // Modifiers
-        var _modifiers = this.getModifiers(elem);
-        if (_.some(elem.operations, function (op) { return op.isAbstract === true; })) {
-            _modifiers.push("abstract");
-        }
-        if (_modifiers.length > 0) {
-            terms.push(_modifiers.join(" "));
-        }
+         // Modifiers
+		var _modifiers = this.getModifiers(elem);
+		if (_modifiers.length > 0) {
+			terms.push(_modifiers.join(" "));
+		}
         
         // AnnotationType
         terms.push("@interface");
