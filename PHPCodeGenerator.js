@@ -268,6 +268,22 @@ define(function (require, exports, module) {
             codeWriter.writeLine(" */");
         }
     };
+	
+	    /**
+     * Write Spacification
+     * @param {StringWriter} codeWriter
+     * @param {string} text
+     */
+    PHPCodeGenerator.prototype.writeSpac = function (codeWriter, text) {
+        var i, len, lines;
+        if (_.isString(text)) {
+            lines = text.trim().split("\n");
+            for (i = 0, len = lines.length; i < len; i++) {
+                codeWriter.writeLine(lines[i]);
+            }
+            codeWriter.writeLine("\n");
+        }
+    };
 
     /**
      * Write Package Declaration
@@ -407,8 +423,13 @@ define(function (require, exports, module) {
             } else {
                 codeWriter.writeLine(terms.join(" ") + " {");
                 codeWriter.indent();
-                codeWriter.writeLine("// TODO implement here");
-               
+				
+				//spacification
+				if(elem.specification.length > 0){
+					this.writeSpac (codeWriter, elem.specification);
+				}else{
+					codeWriter.writeLine("// TODO implement here");
+				}
                 // return statement
                 if (returnParam) {
                     var returnType = this.getType(returnParam);
