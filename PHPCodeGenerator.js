@@ -281,7 +281,6 @@ define(function (require, exports, module) {
             for (i = 0, len = lines.length; i < len; i++) {
                 codeWriter.writeLine(lines[i]);
             }
-            codeWriter.writeLine("\n");
         }
     };
 
