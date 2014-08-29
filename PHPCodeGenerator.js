@@ -429,24 +429,25 @@ define(function (require, exports, module) {
 					this.writeSpac (codeWriter, elem.specification);
 				}else{
 					codeWriter.writeLine("// TODO implement here");
+				
+					// return statement
+					if (returnParam) {
+						var returnType = this.getType(returnParam);
+						if (returnType === "boolean") {
+							codeWriter.writeLine("return false;");
+						} else if (returnType === "int" || returnType === "long" || returnType === "short" || returnType === "byte") {
+							codeWriter.writeLine("return 0;");
+						} else if (returnType === "float" || returnType === "double") {
+							codeWriter.writeLine("return 0.0;");
+						} else if (returnType === "char") {
+							codeWriter.writeLine("return '0';");
+						} else if (returnType === "string") {
+							codeWriter.writeLine('return "";');
+						} else {
+							codeWriter.writeLine("return null;");
+						}
+					}
 				}
-                // return statement
-                if (returnParam) {
-                    var returnType = this.getType(returnParam);
-                    if (returnType === "boolean") {
-                        codeWriter.writeLine("return false;");
-                    } else if (returnType === "int" || returnType === "long" || returnType === "short" || returnType === "byte") {
-                        codeWriter.writeLine("return 0;");
-                    } else if (returnType === "float" || returnType === "double") {
-                        codeWriter.writeLine("return 0.0;");
-                    } else if (returnType === "char") {
-                        codeWriter.writeLine("return '0';");
-                    } else if (returnType === "string") {
-                        codeWriter.writeLine('return "";');
-                    } else {
-                        codeWriter.writeLine("return null;");
-                    }
-                }
                                
                 codeWriter.outdent();
                 codeWriter.writeLine("}");
