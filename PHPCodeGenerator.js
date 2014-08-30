@@ -212,7 +212,6 @@ define(function (require, exports, module) {
         if (visibility) {
             modifiers.push(visibility);
         }
-		modifiers.join( this.getModifiersClass (elem) );
 
         return modifiers;
     };
@@ -372,6 +371,7 @@ define(function (require, exports, module) {
 			{
 				// modifiers
 				var _modifiers = this.getModifiers(elem);
+				_modifiers.join( this.getModifiersClass (elem) );
 				if (_modifiers.length > 0) {
 					terms.push(_modifiers.join(" "));
 				}
@@ -412,6 +412,7 @@ define(function (require, exports, module) {
             
             // modifiers
             var _modifiers = this.getModifiers(elem);
+			_modifiers.join( this.getModifiersClass (elem) );
             if (_modifiers.length > 0) {
                 terms.push(_modifiers.join(" "));
             }
@@ -496,7 +497,7 @@ define(function (require, exports, module) {
 		   var _that = this;
 
 		   // doc
-		   var doc;
+		   var doc = _method.documentation.trim();
 		   _.each(params, function (param) {
 			   doc += "\n@param " + _that.getType(param) + " " + param.name + " " + param.documentation;
 		   });
