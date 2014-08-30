@@ -485,13 +485,13 @@ define(function (require, exports, module) {
            var _superClass = _superClasses[0];
 		
 			// Methods
-			for (i = 0, len = _superClass.operations.length; i < len; i++) {
+			for (var i = 0, len = _superClass.operations.length; i < len; i++) {
 				var _method = _superClass.operations[i];
 				var haveMethodName=false;
 				
 				// Methods
-				for (i = 0, len = elem.operations.length; i < len; i++) {
-					if( elem.operations[i].name === _method.name ){
+				for (var a = 0, length = elem.operations.length; a < length; a++) {
+					if( elem.operations[a].name === _method.name ){
 						haveMethodName = true;
 					}
 				}
