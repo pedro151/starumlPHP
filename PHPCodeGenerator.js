@@ -491,7 +491,7 @@ define(function (require, exports, module) {
 				
 				// Methods
 				for (i = 0, len = elem.operations.length; i < len; i++) {
-					if( elem.operations[i] === _method.name && elem.operations[i].isAbstract === true ){
+					if( elem.operations[i].name === _method.name ){
 						haveMethodName = true;
 					}
 				}
