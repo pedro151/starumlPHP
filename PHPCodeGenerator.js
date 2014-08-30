@@ -503,6 +503,7 @@ define(function (require, exports, module) {
 				   var _that = this;
 
 				   // doc
+				   var doc;
 				   _.each(params, function (param) {
 					   doc += "\n@param " + _that.getType(param) + " " + param.name + " " + param.documentation;
 				   });
