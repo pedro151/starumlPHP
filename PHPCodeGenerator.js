@@ -478,75 +478,66 @@ define(function (require, exports, module) {
      * @param {Object} options     
      * @param {boolean} skipParams
      */
-    PHPCodeGenerator.prototype.writeMethodAbstractForSuperClass = function (codeWriter, elem, options, skipParams) {
-	
-        var _superClasses = this.getSuperClasses( elem );
-        if (_superClasses.length > 0) {
-           var _superClass = _superClasses[0];
-		
-			// Methods
-			for (var i = 0, len = _superClass.operations.length; i < len; i++) {
-				var _method = _superClass.operations[i];
-				var haveMethodName=false;
-				
-				// Methods
-				for (var a = 0, length = elem.operations.length; a < length; a++) {
-					if( elem.operations[a].name === _method.name ){
-						haveMethodName = true;
-					}
-				}
-	
-			   if (_method.name.length > 0 && _method.isAbstract === true && !haveMethodName) {
-				   var terms = [];
-				   var params = _method.getNonReturnParameters();
-				   var returnParam = _method.getReturnParameter();
-				   var _that = this;
+    PHPCodeGenerator.prototype.writeMethodSuperClass = function (codeWriter, _method, elem, options, skipParams) {
 
-				   // doc
-				   var doc;
-				   _.each(params, function (param) {
-					   doc += "\n@param " + _that.getType(param) + " " + param.name + " " + param.documentation;
-				   });
-				   if (returnParam) {
-					   doc += "\n@return "+ this.getType(returnParam) + " " + returnParam.documentation;
-				   }
-				   this.writeDoc(codeWriter, doc, options);
+		var haveMethodName=false;
 
-				   // modifiers
-				   var modifiers = [];
-				   var visibility = this.getVisibility(_method);
-				   if (visibility) {
-					   modifiers.push(visibility);
-					   terms.push(modifiers.join(" "));
-				   }
-
-				   terms.push("function");
-
-				   // name + parameters
-				   var paramTerms = [];
-				   if (!skipParams) {
-					   var i, len;
-					   for (i = 0, len = params.length; i < len; i++) {
-						   var p = params[i];
-						   var s = "$" + p.name;
-
-						   paramTerms.push(s);
-					   }
-				   }
-				   terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
-
-				   // body
-				   codeWriter.writeLine(terms.join(" ") + " {");
-				   codeWriter.indent();
-
-				   codeWriter.writeLine("// TODO implement here");
-
-				   codeWriter.outdent();
-				   codeWriter.writeLine("}");
-				}
+		// Methods
+		for (var a = 0, length = elem.operations.length; a < length; a++) {
+			if( elem.operations[a].name === _method.name ){
+				haveMethodName = true;
 			}
+		}
 
-        }
+	   if (_method.name.length > 0 && !haveMethodName) {
+		   var terms = [];
+		   var params = _method.getNonReturnParameters();
+		   var returnParam = _method.getReturnParameter();
+		   var _that = this;
+
+		   // doc
+		   var doc;
+		   _.each(params, function (param) {
+			   doc += "\n@param " + _that.getType(param) + " " + param.name + " " + param.documentation;
+		   });
+		   if (returnParam) {
+			   doc += "\n@return "+ this.getType(returnParam) + " " + returnParam.documentation;
+		   }
+		   this.writeDoc(codeWriter, doc, options);
+
+		   // modifiers
+		   var modifiers = [];
+		   var visibility = this.getVisibility(_method);
+		   if (visibility) {
+			   modifiers.push(visibility);
+			   terms.push(modifiers.join(" "));
+		   }
+
+		   terms.push("function");
+
+		   // name + parameters
+		   var paramTerms = [];
+		   if (!skipParams) {
+			   var i, len;
+			   for (i = 0, len = params.length; i < len; i++) {
+				   var p = params[i];
+				   var s = "$" + p.name;
+
+				   paramTerms.push(s);
+			   }
+		   }
+		   terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
+
+		   // body
+		   codeWriter.writeLine(terms.join(" ") + " {");
+		   codeWriter.indent();
+
+		   codeWriter.writeLine("// TODO implement here");
+
+		   codeWriter.outdent();
+		   codeWriter.writeLine("}");
+		}
+
     };
 
     /**
@@ -577,8 +568,10 @@ define(function (require, exports, module) {
         
         // Extends
         var _extends = this.getSuperClasses(elem);
+		var _superClass;
         if (_extends.length > 0) {
-            terms.push("extends " + _extends[0].name);
+			_superClass = _extends[0];
+            terms.push("extends " + _superClass.name);
         }
         
         // Implements
@@ -621,8 +614,15 @@ define(function (require, exports, module) {
             codeWriter.writeLine();
         }
 		
-		this.writeMethodAbstractForSuperClass (codeWriter, elem, options, false) ;
-
+		if(typeof  _superClass !== "undefined"){
+			// Methods
+			for (var i = 0, len = _superClass.operations.length; i < len; i++) {
+				var _method = _superClass.operations[i];
+                if(typeof _method !== "undefined" && _method.isAbstract === true){
+					this.writeMethodSuperClass(codeWriter, _method,  elem, options, false) ;
+				}
+			}
+		}
         // Inner Definitions
         for (i = 0, len = elem.ownedElements.length; i < len; i++) {
             var def = elem.ownedElements[i];
