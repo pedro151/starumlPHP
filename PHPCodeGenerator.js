@@ -212,9 +212,8 @@ define(function (require, exports, module) {
         if (visibility) {
             modifiers.push(visibility);
         }
-		modifiers.concat( this.getModifiersClass (elem) );
-
-        return modifiers;
+		var status = this.getModifiersClass(elem);
+		return _.union(modifiers, status);
     };
 
     /**
