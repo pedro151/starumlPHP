@@ -241,6 +241,22 @@ define(function (require, exports, module) {
         });
         return _.map(realizations, function (gen) { return gen.target; });
     };
+	
+	/**
+     * 
+     * @param {type.Model} elem
+     * @return {Array}
+     */
+    PHPCodeGenerator.prototype.getNamespaces = function (elem) {
+		var _namespace= [];
+		var _parent;
+		if(elem._parent instanceof type.UMLPackage){
+			_parent = this.getNamespaces (elem._parent);
+			_namespace.push(_parent.name);
+		}
+		
+		return _.union(_parent,_namespace);
+    };
 
     /**
      * Return type expression
@@ -249,20 +265,23 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.getType = function (elem) {
         var _type = "void";
+		var _namespace = [];
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
-                if(elem.reference._parent instanceof type.UMLPackage){
-                    _type = elem.reference._parent.name +SEPARATE_NAMESPACE+_type ;
-                }
+				_namespace = this.getNamespaces (elem.reference);
+				for (var i = 0, len = _namespace.length; i < len; i++) {	
+					_type = _namespace[i]+SEPARATE_NAMESPACE+_type;
+				}
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
-				if(elem.type._parent instanceof type.UMLPackage){
-                    _type = elem.type._parent.name +SEPARATE_NAMESPACE+_type ;
-                }
+				_namespace = this.getNamespaces (elem.type);
+				for (var i = 0, len = _namespace.length; i < len; i++) {	
+					_type = _namespace[i]+SEPARATE_NAMESPACE+_type;
+				}
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
             }
