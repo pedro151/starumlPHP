@@ -1,7 +1,7 @@
 PHP Extension for StarUML 2
 ============================
 
-This extension for StarUML(http://staruml.io) support to generate PHP code from UML model and to reverse Java code to UML model. Install this extension from Extension Manager of StarUML.
+This extension for StarUML(http://staruml.io) support to generate PHP code from UML model. Install this extension from Extension Manager of StarUML.
 
 PHP Code Generation
 --------------------
