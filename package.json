@@ -2,8 +2,9 @@
     "name": "staruml.php",
     "title": "PHP",
     "description": "PHP code generation.",
+    "homepage": "https://github.com/pedro151/starumlPHP",
     "keywords": ["php"],
-    "version": "0.0.1",
+    "version": "0.0.2",
     "author": {
         "name": "Pedro",
         "url": "https://github.com/pedro151"
