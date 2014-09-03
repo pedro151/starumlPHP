@@ -36,6 +36,8 @@ define(function (require, exports, module) {
 
     var CodeGenUtils = require("CodeGenUtils");
     
+	//constante for separate namespace on code
+	var SEPARATE_NAMESPACE = "\\";
     /**
      * PHP Code Generator
      * @constructor
@@ -251,10 +253,16 @@ define(function (require, exports, module) {
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
+                if(elem.reference._parent instanceof type.UMLPackage){
+                    _type = elem.reference._parent.name +SEPARATE_NAMESPACE+_type ;
+                }
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
+				if(elem.type._parent instanceof type.UMLPackage){
+                    _type = elem.type._parent.name +SEPARATE_NAMESPACE+_type ;
+                }
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
             }
@@ -308,7 +316,7 @@ define(function (require, exports, module) {
     PHPCodeGenerator.prototype.writePackageDeclaration = function (codeWriter, elem, options) {
         var path = null;
         if (elem._parent) {
-            path = _.map(elem._parent.getPath(this.baseModel), function (e) { return e.name; }).join("\\");
+            path = _.map(elem._parent.getPath(this.baseModel), function (e) { return e.name; }).join(SEPARATE_NAMESPACE);
         }
         if (path) {
             codeWriter.writeLine("namespace " + path + ";");
@@ -402,7 +410,7 @@ define(function (require, exports, module) {
             // doc
             var doc = elem.documentation.trim();
             _.each(params, function (param) {
-                doc += "\n@param " + _that.getType(param) + " " + param.name + " " + param.documentation;
+                doc += "\n@param " + _that.getType(param) + " $" + param.name + " " + param.documentation;
             });
             if (returnParam) {
                 doc += "\n@return "+ this.getType(returnParam) + " " + returnParam.documentation;
