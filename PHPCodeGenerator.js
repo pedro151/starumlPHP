@@ -248,11 +248,11 @@ define(function (require, exports, module) {
      * @return {Array}
      */
     PHPCodeGenerator.prototype.getNamespaces = function (elem) {
-		var _namespace= [];
-		var _parent;
-		if(elem._parent instanceof type.UMLPackage){
-			_parent = this.getNamespaces (elem._parent);
-			_namespace.push(_parent.name);
+		var _namespace = [];
+		var _parent = [];
+		if(elem._parent instanceof type.UMLPackage && !(elem._parent instanceof type.UMLModel)){
+		    _namespace.push( elem._parent.name );
+			_parent = this.getNamespaces ( elem._parent );
 		}
 		
 		return _.union(_parent,_namespace);
@@ -265,23 +265,19 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.getType = function (elem) {
         var _type = "void";
-		var _namespace = [];
+		var _namespace = "";
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
-				_namespace = this.getNamespaces (elem.reference);
-				for (var i = 0, len = _namespace.length; i < len; i++) {	
-					_type = _namespace[i]+SEPARATE_NAMESPACE+_type;
-				}
+				_namespace =_.map(this.getNamespaces (elem.reference).reverse(), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+                _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
-				_namespace = this.getNamespaces (elem.type);
-				for (var i = 0, len = _namespace.length; i < len; i++) {	
-					_type = _namespace[i]+SEPARATE_NAMESPACE+_type;
-				}
+				_namespace =_.map(this.getNamespaces (elem.type).reverse(), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+                _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
             }
