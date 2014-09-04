@@ -270,13 +270,13 @@ define(function (require, exports, module) {
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
-				_namespace =_.map(this.getNamespaces (elem.reference).reverse(), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+				_namespace =_.map(this.getNamespaces (elem.reference), function (e) { return e; }).join(SEPARATE_NAMESPACE);
                 _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
-				_namespace =_.map(this.getNamespaces (elem.type).reverse(), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+				_namespace =_.map(this.getNamespaces (elem.type), function (e) { return e; }).join(SEPARATE_NAMESPACE);
                 _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
