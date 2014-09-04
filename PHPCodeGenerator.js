@@ -284,7 +284,9 @@ define(function (require, exports, module) {
         }
         // multiplicity
         if (elem.multiplicity && _type !== "void") {
+			 if (_.contains(["0..*", "1..*", "*"], elem.multiplicity.trim())) {
                 _type += "[]";
+			}
         }
         return _type;
     };
