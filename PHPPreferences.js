@@ -20,7 +20,7 @@ define(function (require, exports, module) {
 
     var AppInit           = staruml.getModule("utils/AppInit"),
         Core              = staruml.getModule("core/Core"),
-        PreferenceManager = staruml.getModule("preference/PreferenceManager");
+        PreferenceManager = staruml.getModule("core/PreferenceManager");
 
     var preferenceId = "php";
     
