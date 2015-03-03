@@ -27,7 +27,8 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var Repository = staruml.getModule("engine/Repository"),
+    var Repository = staruml.getModule("core/Repository"),
+        ProjectManager = app.getModule("engine/ProjectManager"),
         Engine     = staruml.getModule("engine/Engine"),
         FileSystem = staruml.getModule("filesystem/FileSystem"),
         FileUtils  = staruml.getModule("file/FileUtils"),
@@ -575,8 +576,8 @@ define(function (require, exports, module) {
         
         // Doc
         var doc = elem.documentation.trim();
-        if (Repository.getProject().author && Repository.getProject().author.length > 0) {
-            doc += "\n@author " + Repository.getProject().author;
+        if (ProjectManager.getProject().author && ProjectManager.getProject().author.length > 0) {
+            doc += "\n@author " + ProjectManager.getProject().author;
         }
         this.writeDoc(codeWriter, doc, options);
         
