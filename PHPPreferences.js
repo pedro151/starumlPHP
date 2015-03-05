@@ -47,6 +47,18 @@ define(function (require, exports, module) {
             type: "Number",
             default: 4
         },
+        "php.gen.classExtension": {
+            text: "Append to class filename",
+            description: "Insert value into class filename extensions (e.g. MyClass.class.php)",
+            type: "String",
+            default: ".class"
+        },
+        "php.gen.interfaceExtension": {
+            text: "Append to interface filename",
+            description: "Insert value into interface filename extensions (e.g. MyInterface.interface.php)",
+            type: "String",
+            default: ".interface"
+        },
         "php.rev": {
             text: "PHP Reverse Engineering",
             type: "Section"
@@ -91,7 +103,9 @@ define(function (require, exports, module) {
         return {
             phpDoc       : PreferenceManager.get("php.gen.phpDoc"),
             useTab        : PreferenceManager.get("php.gen.useTab"),
-            indentSpaces  : PreferenceManager.get("php.gen.indentSpaces")
+            indentSpaces  : PreferenceManager.get("php.gen.indentSpaces"),
+            classExtension : PreferenceManager.get("php.gen.classExtension"),
+            interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension")
         };
     }
 
