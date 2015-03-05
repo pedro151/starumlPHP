@@ -120,7 +120,7 @@ define(function (require, exports, module) {
                 
             // Class
             } else {
-                fullPath = path + "/" + elem.name + ".class.php";
+                fullPath = path + "/" + elem.name + options.classExtension + ".php";
                 codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
 				codeWriter.writeLine("<?php\n");
                 this.writePackageDeclaration(codeWriter, elem, options);
@@ -132,7 +132,7 @@ define(function (require, exports, module) {
             
         // Interface
         } else if (elem instanceof type.UMLInterface) {
-            fullPath = path + "/" + elem.name + ".interface.php";
+            fullPath = path + "/" + elem.name + options.interfaceExtension + ".php";
             codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
 			codeWriter.writeLine("<?php\n");
             this.writePackageDeclaration(codeWriter, elem, options);
