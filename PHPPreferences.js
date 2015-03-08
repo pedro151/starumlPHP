@@ -18,9 +18,9 @@
 define(function (require, exports, module) {
     "use strict";
 
-    var AppInit           = staruml.getModule("utils/AppInit"),
-        Core              = staruml.getModule("core/Core"),
-        PreferenceManager = staruml.getModule("core/PreferenceManager");
+    var AppInit           = app.getModule("utils/AppInit"),
+        Core              = app.getModule("core/Core"),
+        PreferenceManager = app.getModule("core/PreferenceManager");
 
     var preferenceId = "php";
     
