@@ -4,7 +4,7 @@
     "description": "PHP code generation.",
     "homepage": "https://github.com/pedro151/starumlPHP",
     "keywords": ["php"],
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": {
         "name": "Pedro",
         "url": "https://github.com/pedro151"
