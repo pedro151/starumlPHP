@@ -264,29 +264,21 @@ define(function (require, exports, module) {
      * @param {type.Model} elem
      * @return {string}
      */
-    PHPCodeGenerator.prototype.getType = function (elem, document) {
+    PHPCodeGenerator.prototype.getType = function (elem) {
         var _type = "void";
 		var _namespace = "";
-        var _document = ((typeof document) !== 'undefined') ? 0 : 1;
-        
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
 				_namespace =_.map(this.getNamespaces (elem.reference), function (e) { return e; }).join(SEPARATE_NAMESPACE);
-                if(_namespace!==""){
-		    	    _namespace = SEPARATE_NAMESPACE+_namespace;
-		        }
-                 _type = _namespace + SEPARATE_NAMESPACE + _type;
+                _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
 				_namespace =_.map(this.getNamespaces (elem.type), function (e) { return e; }).join(SEPARATE_NAMESPACE);
-            if(_namespace!==""){
-		    	_namespace = SEPARATE_NAMESPACE+_namespace;
-		    }
-                _type = _namespace + SEPARATE_NAMESPACE + _type;
+                _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
             }
@@ -294,11 +286,7 @@ define(function (require, exports, module) {
         // multiplicity
         if (elem.multiplicity && _type !== "void") {
 			 if (_.contains(["0..*", "1..*", "*"], elem.multiplicity.trim())) {
-                 if(_document == 1){
-                    _type += "[]";
-                 }else{
-                     _type = "array"
-                 }
+                _type += "[]";
 			}
         }
         return _type;
@@ -463,19 +451,11 @@ define(function (require, exports, module) {
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
                     var s = "$" + p.name;
-                    
-                    if(options.phpStrictMode){
-                       s = _that.getType(p,1) + ' '+ s;
-                    }
+            
                     paramTerms.push(s);
                 }
             }
-            
-            var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
-            if(options.phpStrictMode){
-                functionName = functionName + ':' + _that.getType(returnParam,1);
-            }
-            terms.push(functionName);
+            terms.push(elem.name + "(" + paramTerms.join(", ") + ")");
             
             // body
             if (skipBody === true || _.contains(_modifiers, "abstract")) {
@@ -562,20 +542,15 @@ define(function (require, exports, module) {
 
 		   // name + parameters
 		   var paramTerms = [];
-            if (!skipParams) {
-                var i, len;
-                for (i = 0, len = params.length; i < len; i++) {
-                    var p = params[i];
-                    var s = "$" + p.name;
-                    if(options.phpStrictMode){
-                        s = _that.getType(p,1) + ' '+ s;
-                    }
-                    
-                    paramTerms.push(s);
-                }
-            }
-            
-           var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
+		   if (!skipParams) {
+			   var i, len;
+			   for (i = 0, len = params.length; i < len; i++) {
+				   var p = params[i];
+				   var s = "$" + p.name;
+
+				   paramTerms.push(s);
+			   }
+		   }
 		   terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
 
 		   // body

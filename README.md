@@ -10,22 +10,15 @@ PHP Code Generation
 2. Select a base model (or package) that will be generated to PHP.
 3. Select a folder where generated PHP source files will be placed.
 
-Configurations optionals
-------------------------
-* Strict Mode (PHP7)
-* PHPDoc
-* Append to file extencion
-
 Belows are the rules to convert from UML model elements to PHP source codes.
 
 ### UMLPackage
 
 * converted to _PHP Package_ (as a folder).
-* create namespaces
 
 ### UMLClass
 
-* converted to _PHP Class_. (as a optional separate `.class.php` file)
+* converted to _PHP Class_. (as a separate `.class.php` file)
 * `isAbstract` property to `abstract` modifier.
 * `isFinalSpecification` and `isLeaf` property to `final` modifier.
 * Default constructor is generated.
