@@ -57,13 +57,13 @@ define(function (require, exports, module) {
             text: "Append to class filename",
             description: "Insert value into class filename extensions (e.g. MyClass.class.php)",
             type: "String",
-            default: ".class"
+            default: ""
         },
         "php.gen.interfaceExtension": {
             text: "Append to interface filename",
             description: "Insert value into interface filename extensions (e.g. MyInterface.interface.php)",
             type: "String",
-            default: ".interface"
+            default: ""
         },
         "php.rev": {
             text: "PHP Reverse Engineering",
