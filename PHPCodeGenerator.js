@@ -575,7 +575,6 @@ define(function (require, exports, module) {
                 }
             }
             
-           var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
 		   terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
 
 		   // body
