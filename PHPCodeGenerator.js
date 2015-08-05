@@ -38,7 +38,7 @@ define(function (require, exports, module) {
     var CodeGenUtils = require("CodeGenUtils");
     
 	//constante for separate namespace on code
-	var SEPARATE_NAMESPACE = "\\";
+	var SEPARATE_NAMESPACE = '\\';
     /**
      * PHP Code Generator
      * @constructor
@@ -264,21 +264,23 @@ define(function (require, exports, module) {
      * @param {type.Model} elem
      * @return {string}
      */
-    PHPCodeGenerator.prototype.getType = function (elem) {
+    PHPCodeGenerator.prototype.getType = function (elem, document) {
         var _type = "void";
 		var _namespace = "";
+        var _document = ((typeof document) !== 'undefined') ? 0 : 1;
+        
         // type name
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
 				_namespace =_.map(this.getNamespaces (elem.reference), function (e) { return e; }).join(SEPARATE_NAMESPACE);
-                _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
+                _type = _namespace+_type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
 				_namespace =_.map(this.getNamespaces (elem.type), function (e) { return e; }).join(SEPARATE_NAMESPACE);
-                _type = SEPARATE_NAMESPACE+_namespace+SEPARATE_NAMESPACE+_type;
+                _type = _namespace+_type;
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
             }
@@ -286,7 +288,11 @@ define(function (require, exports, module) {
         // multiplicity
         if (elem.multiplicity && _type !== "void") {
 			 if (_.contains(["0..*", "1..*", "*"], elem.multiplicity.trim())) {
-                _type += "[]";
+                 if(_document == 1){
+                    _type += "[]";
+                 }else{
+                     _type = "array"
+                 }
 			}
         }
         return _type;
@@ -451,11 +457,19 @@ define(function (require, exports, module) {
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
                     var s = "$" + p.name;
-            
+                    
+                    if(options.phpStrictMode){
+                       s = _that.getType(p,1) + ' '+ s;
+                    }
                     paramTerms.push(s);
                 }
             }
-            terms.push(elem.name + "(" + paramTerms.join(", ") + ")");
+            
+            var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
+            if(options.phpStrictMode){
+                functionName = functionName + ':' + _that.getType(returnParam,1);
+            }
+            terms.push(functionName);
             
             // body
             if (skipBody === true || _.contains(_modifiers, "abstract")) {
@@ -542,15 +556,20 @@ define(function (require, exports, module) {
 
 		   // name + parameters
 		   var paramTerms = [];
-		   if (!skipParams) {
-			   var i, len;
-			   for (i = 0, len = params.length; i < len; i++) {
-				   var p = params[i];
-				   var s = "$" + p.name;
-
-				   paramTerms.push(s);
-			   }
-		   }
+            if (!skipParams) {
+                var i, len;
+                for (i = 0, len = params.length; i < len; i++) {
+                    var p = params[i];
+                    var s = "$" + p.name;
+                    if(options.phpStrictMode){
+                        s = _that.getType(p,1) + ' '+ s;
+                    }
+                    
+                    paramTerms.push(s);
+                }
+            }
+            
+           var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
 		   terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
 
 		   // body
