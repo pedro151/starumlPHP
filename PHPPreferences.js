@@ -35,6 +35,12 @@ define(function (require, exports, module) {
             type: "Check",
             default: true
         },
+        "php.gen.phpStrictMode": {
+            text: "Strict Mode",
+            description: "Generate PHP Strict Mode (e.q. PHP7).",
+            type: "Check",
+            default: true
+        },
         "php.gen.useTab": {
             text: "Use Tab",
             description: "Use Tab for indentation instead of spaces.",
@@ -105,7 +111,8 @@ define(function (require, exports, module) {
             useTab        : PreferenceManager.get("php.gen.useTab"),
             indentSpaces  : PreferenceManager.get("php.gen.indentSpaces"),
             classExtension : PreferenceManager.get("php.gen.classExtension"),
-            interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension")
+            interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension"),
+            phpStrictMode : PreferenceManager.get("php.gen.phpStrictMode")
         };
     }
 
