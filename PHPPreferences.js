@@ -64,40 +64,6 @@ define(function (require, exports, module) {
             description: "Insert value into interface filename extensions (e.g. MyInterface.interface.php)",
             type: "String",
             default: ""
-        },
-        "php.rev": {
-            text: "PHP Reverse Engineering",
-            type: "Section"
-        },
-        "php.rev.association": {
-            text: "Use Association",
-            description: "Reverse PHP Fields as UML Associations.",
-            type: "Check",
-            default: true
-        },
-        "php.rev.publicOnly": {
-            text: "Public Only",
-            description: "Reverse public members only.",
-            type: "Check",
-            default: false
-        },
-        "php.rev.typeHierarchy": {
-            text: "Type Hierarchy Diagram",
-            description: "Create a type hierarchy diagram for all classes and interfaces",
-            type: "Check",
-            default: true
-        },
-        "php.rev.packageOverview": {
-            text: "Package Overview Diagram",
-            description: "Create overview diagram for each package",
-            type: "Check",
-            default: true
-        },
-        "php.rev.packageStructure": {
-            text: "Package Structure Diagram",
-            description: "Create a package structure diagram for all packages",
-            type: "Check",
-            default: true
         }
     };
     
@@ -116,22 +82,11 @@ define(function (require, exports, module) {
         };
     }
 
-    function getRevOptions() {
-        return {
-            association      : PreferenceManager.get("php.rev.association"),
-            publicOnly       : PreferenceManager.get("php.rev.publicOnly"),
-            typeHierarchy    : PreferenceManager.get("php.rev.typeHierarchy"),
-            packageOverview  : PreferenceManager.get("php.rev.packageOverview"),
-            packageStructure : PreferenceManager.get("php.rev.packageStructure")
-        };
-    }
-
     AppInit.htmlReady(function () {
         PreferenceManager.register(preferenceId, "PHP", phpPreferences);
     });
 
     exports.getId         = getId;
     exports.getGenOptions = getGenOptions;
-    exports.getRevOptions = getRevOptions;
 
 });
