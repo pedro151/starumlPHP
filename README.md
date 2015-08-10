@@ -16,6 +16,9 @@ Configurations optionals
 * PHPDoc
 * Append to file extencion
 
+Features
+--------
+
 Belows are the rules to convert from UML model elements to PHP source codes.
 
 ### UMLPackage
