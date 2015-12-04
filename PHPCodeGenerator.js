@@ -287,7 +287,7 @@ define(function (require, exports, module) {
                 }
                 _type = _namespace + SEPARATE_NAMESPACE + _type;
             }
-        } else {
+            
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
                 _namespace = _.map(this.getNamespaces(elem.type), function (e) {
@@ -298,9 +298,10 @@ define(function (require, exports, module) {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
                 }
                 _type = _namespace + SEPARATE_NAMESPACE + _type;
-            } else if (_.isString(elem.type) && elem.type.length > 0) {
+            } 
+            
+        } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
-            }
         }
         // multiplicity
         if (elem.multiplicity && _type !== "void") {
