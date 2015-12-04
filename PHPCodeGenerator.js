@@ -275,7 +275,7 @@ define(function (require, exports, module) {
         var _document = ((typeof document) !== 'undefined') ? 0 : 1;
     
         if(elem == null){
-            return;
+            return _type;
         }
 
         // type name
