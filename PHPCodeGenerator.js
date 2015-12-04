@@ -274,7 +274,7 @@ define(function (require, exports, module) {
         var _namespace = "";
         var _document = ((typeof document) !== 'undefined') ? 0 : 1;
     
-        if(type == null){
+        if(elem == null){
             return _type;
         }
 
