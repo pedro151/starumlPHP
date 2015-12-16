@@ -273,7 +273,7 @@ define(function (require, exports, module) {
         var _type = "void";
         var _namespace = "";
         var _document = ((typeof document) !== 'undefined') ? 0 : 1;
-    
+
         if(elem == null){
             return _type;
         }
@@ -322,12 +322,16 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writeDoc = function (codeWriter, text, options) {
-        var i, len, lines;
+        var i, len, lines, terms;
         if (options.phpDoc && _.isString(text)) {
             lines = text.trim().split("\n");
             codeWriter.writeLine("/**");
             for (i = 0, len = lines.length; i < len; i++) {
-                codeWriter.writeLine(" * " + lines[i]);
+                terms = [" *"];
+                if (lines[i] != "") {
+                    terms.push(lines[i].trim());
+                }
+                codeWriter.writeLine(terms.join(" "));
             }
             codeWriter.writeLine(" */");
         }
@@ -393,7 +397,8 @@ define(function (require, exports, module) {
                     terms.push(visibility);
                 }
                 terms.push("function __construct()");
-                codeWriter.writeLine(terms.join(" ") + " {");
+                codeWriter.writeLine(terms.join(" "));
+                codeWriter.writeLine("{");
                 codeWriter.writeLine("}");
             }
         }
@@ -491,7 +496,8 @@ define(function (require, exports, module) {
             if (skipBody === true || _.contains(_modifiers, "abstract")) {
                 codeWriter.writeLine(terms.join(" ") + ";");
             } else {
-                codeWriter.writeLine(terms.join(" ") + " {");
+                codeWriter.writeLine(terms.join(" "));
+                codeWriter.writeLine("{");
                 codeWriter.indent();
 
                 //spacification
@@ -591,7 +597,8 @@ define(function (require, exports, module) {
             terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
 
             // body
-            codeWriter.writeLine(terms.join(" ") + " {");
+            codeWriter.writeLine(terms.join(" "));
+            codeWriter.writeLine("{");
             codeWriter.indent();
 
             codeWriter.writeLine("// TODO implement here");
@@ -643,8 +650,8 @@ define(function (require, exports, module) {
                     return e.name;
                 }).join(", "));
         }
-        codeWriter.writeLine(terms.join(" ") + " {");
-        codeWriter.writeLine();
+        codeWriter.writeLine(terms.join(" "));
+        codeWriter.writeLine("{");
         codeWriter.indent();
 
         // Constructor
@@ -707,7 +714,9 @@ define(function (require, exports, module) {
         }
 
         codeWriter.outdent();
+        codeWriter.lines.pop();
         codeWriter.writeLine("}");
+        codeWriter.writeLine();
     };
 
 
@@ -740,8 +749,8 @@ define(function (require, exports, module) {
                     return e.name;
                 }).join(", "));
         }
-        codeWriter.writeLine(terms.join(" ") + " {");
-        codeWriter.writeLine();
+        codeWriter.writeLine(terms.join(" "));
+        codeWriter.writeLine("{");
         codeWriter.indent();
 
         // Member Variables
