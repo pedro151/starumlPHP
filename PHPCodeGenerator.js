@@ -126,6 +126,7 @@ define(function (require, exports, module) {
                 codeWriter.writeLine("<?php\n");
                 this.writePackageDeclaration(codeWriter, elem, options);
                 codeWriter.writeLine();
+                codeWriter.addSection("uses");
                 this.writeClass(codeWriter, elem, options);
                 file = FileSystem.getFileForPath(fullPath);
                 FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
@@ -482,8 +483,13 @@ define(function (require, exports, module) {
                     var p = params[i];
                     var s = "$" + p.name;
                     var type = this.getType(p, 1);
+                    var typeHint = type;
                     if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
-                        s = type + ' ' + s;
+                        if (type.split("\\").length - 1 > 1) {
+                            codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
+                            typeHint = typeHint.replace(/^.*\\+/, "");
+                        }
+                        s = typeHint + " " + s;
                     }
                     paramTerms.push(s);
                 }
@@ -915,6 +921,7 @@ define(function (require, exports, module) {
             case "double":
             case "string":
             case "resource":
+            case "void":
                 return false;
             default:
                 return true;
