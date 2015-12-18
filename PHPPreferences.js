@@ -23,7 +23,7 @@ define(function (require, exports, module) {
         PreferenceManager = app.getModule("core/PreferenceManager");
 
     var preferenceId = "php";
-    
+
     var phpPreferences = {
         "php.gen": {
             text: "PHP Code Generation",
@@ -37,7 +37,13 @@ define(function (require, exports, module) {
         },
         "php.gen.phpStrictMode": {
             text: "Strict Mode",
-            description: "Generate PHP Strict Mode (e.q. PHP7).",
+            description: "Generate PHP Strict Mode.",
+            type: "Check",
+            default: true
+        },
+        "php.gen.phpReturnType": {
+            text: "Return Type",
+            description: "Generate PHP Return Type (e.q. PHP7).",
             type: "Check",
             default: true
         },
@@ -66,7 +72,7 @@ define(function (require, exports, module) {
             default: ""
         }
     };
-    
+
     function getId() {
         return preferenceId;
     }
@@ -78,7 +84,8 @@ define(function (require, exports, module) {
             indentSpaces  : PreferenceManager.get("php.gen.indentSpaces"),
             classExtension : PreferenceManager.get("php.gen.classExtension"),
             interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension"),
-            phpStrictMode : PreferenceManager.get("php.gen.phpStrictMode")
+            phpStrictMode : PreferenceManager.get("php.gen.phpStrictMode"),
+            phpReturnType : PreferenceManager.get("php.gen.phpReturnType")
         };
     }
 
