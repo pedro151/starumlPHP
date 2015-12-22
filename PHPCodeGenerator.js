@@ -168,12 +168,14 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.getVisibility = function (elem) {
         switch (elem.visibility) {
-            case UML.VK_PUBLIC:
-                return "public";
-            case UML.VK_PROTECTED:
-                return "protected";
-            case UML.VK_PRIVATE:
-                return "private";
+        case UML.VK_PACKAGE:
+            return "";
+        case UML.VK_PUBLIC:
+            return "public";
+        case UML.VK_PROTECTED:
+            return "protected";
+        case UML.VK_PRIVATE:
+            return "private";
         }
         return null;
     };
