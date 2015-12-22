@@ -358,10 +358,11 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.writePackageDeclaration = function (codeWriter, elem, options) {
         var path = null;
-        if (elem._parent) {
-            path = _.map(elem._parent.getPath(this.baseModel), function (e) {
-                return e.name;
-            }).join(SEPARATE_NAMESPACE);
+        var pathItems = [];
+        pathItems = this.getNamespaces(elem);
+        if (pathItems.length > 0) {
+            pathItems.push(elem.name);
+            path = pathItems.join(SEPARATE_NAMESPACE);
         }
         if (path) {
             codeWriter.writeLine("namespace " + path + ";");
