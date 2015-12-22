@@ -168,12 +168,14 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.getVisibility = function (elem) {
         switch (elem.visibility) {
-            case UML.VK_PUBLIC:
-                return "public";
-            case UML.VK_PROTECTED:
-                return "protected";
-            case UML.VK_PRIVATE:
-                return "private";
+        case UML.VK_PACKAGE:
+            return "";
+        case UML.VK_PUBLIC:
+            return "public";
+        case UML.VK_PROTECTED:
+            return "protected";
+        case UML.VK_PRIVATE:
+            return "private";
         }
         return null;
     };
@@ -393,7 +395,7 @@ define(function (require, exports, module) {
                     terms.push(visibility);
                 }
                 terms.push("function __construct()");
-                codeWriter.writeLine(terms.join(" ") + " {");
+                codeWriter.writeLine(terms.join(" ") + "\n{");
                 codeWriter.writeLine("}");
             }
         }
@@ -491,7 +493,7 @@ define(function (require, exports, module) {
             if (skipBody === true || _.contains(_modifiers, "abstract")) {
                 codeWriter.writeLine(terms.join(" ") + ";");
             } else {
-                codeWriter.writeLine(terms.join(" ") + " {");
+                codeWriter.writeLine(terms.join(" ") + "\n{");
                 codeWriter.indent();
 
                 //spacification
@@ -591,7 +593,7 @@ define(function (require, exports, module) {
             terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
 
             // body
-            codeWriter.writeLine(terms.join(" ") + " {");
+            codeWriter.writeLine(terms.join(" ") + "\n{");
             codeWriter.indent();
 
             codeWriter.writeLine("// TODO implement here");
@@ -643,7 +645,7 @@ define(function (require, exports, module) {
                     return e.name;
                 }).join(", "));
         }
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.writeLine();
         codeWriter.indent();
 
@@ -723,12 +725,6 @@ define(function (require, exports, module) {
         // Doc
         this.writeDoc(codeWriter, elem.documentation, options);
 
-        // Modifiers
-        var visibility = this.getVisibility(elem);
-        if (visibility) {
-            terms.push(visibility);
-        }
-
         // Interface
         terms.push("interface");
         terms.push(elem.name);
@@ -740,7 +736,7 @@ define(function (require, exports, module) {
                     return e.name;
                 }).join(", "));
         }
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.writeLine();
         codeWriter.indent();
 
@@ -798,26 +794,30 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writeEnum = function (codeWriter, elem, options) {
-        var i, len, terms = [];
+        var i, len, terms = [],
+            literals = [];
         // Doc
         this.writeDoc(codeWriter, elem.documentation, options);
 
-        // Modifiers
-        var visibility = this.getVisibility(elem);
-        if (visibility) {
-            terms.push(visibility);
-        }
         // Enum
-        terms.push("enum");
+        terms.push("class");
         terms.push(elem.name);
+        terms.push("extends");
+        terms.push(SEPARATE_NAMESPACE + "SplEnum");
 
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.indent();
 
         // Literals
         for (i = 0, len = elem.literals.length; i < len; i++) {
-            codeWriter.writeLine(elem.literals[i].name + (i < elem.literals.length - 1 ? "," : ""));
+            literals.push("const");
+            literals.push(elem.literals[i].name);
+            literals.push("=");
+            literals.push(i);
+            literlas.push(";");
         }
+
+        codeWriter.writeLine(literals.join(" ") + "\n");
 
         codeWriter.outdent();
         codeWriter.writeLine("}");
@@ -851,7 +851,7 @@ define(function (require, exports, module) {
         terms.push("@interface");
         terms.push(elem.name);
 
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.writeLine();
         codeWriter.indent();
 
