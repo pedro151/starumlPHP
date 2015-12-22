@@ -792,26 +792,30 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writeEnum = function (codeWriter, elem, options) {
-        var i, len, terms = [];
+        var i, len, terms = [],
+            literals = [];
         // Doc
         this.writeDoc(codeWriter, elem.documentation, options);
 
-        // Modifiers
-        var visibility = this.getVisibility(elem);
-        if (visibility) {
-            terms.push(visibility);
-        }
         // Enum
-        terms.push("enum");
+        terms.push("class");
         terms.push(elem.name);
+        terms.push("extends");
+        terms.push(SEPARATE_NAMESPACE + "SplEnum");
 
         codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.indent();
 
         // Literals
         for (i = 0, len = elem.literals.length; i < len; i++) {
-            codeWriter.writeLine(elem.literals[i].name + (i < elem.literals.length - 1 ? "," : ""));
+            literals.push("const");
+            literals.push(elem.literals[i].name);
+            literals.push("=");
+            literals.push(i);
+            literlas.push(";");
         }
+
+        codeWriter.writeLine(literals.join(" ") + "\n");
 
         codeWriter.outdent();
         codeWriter.writeLine("}");
