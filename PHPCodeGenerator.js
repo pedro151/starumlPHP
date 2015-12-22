@@ -723,12 +723,6 @@ define(function (require, exports, module) {
         // Doc
         this.writeDoc(codeWriter, elem.documentation, options);
 
-        // Modifiers
-        var visibility = this.getVisibility(elem);
-        if (visibility) {
-            terms.push(visibility);
-        }
-
         // Interface
         terms.push("interface");
         terms.push(elem.name);
