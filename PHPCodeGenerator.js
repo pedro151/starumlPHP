@@ -275,7 +275,7 @@ define(function (require, exports, module) {
         var _type = "void";
         var _namespace = "";
         var _document = ((typeof document) !== 'undefined') ? 0 : 1;
-    
+
         if(elem == null){
             return _type;
         }
@@ -475,17 +475,17 @@ define(function (require, exports, module) {
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
                     var s = "$" + p.name;
-
-                    if (options.phpStrictMode) {
-                        s = _that.getType(p, 1) + ' ' + s;
+                    var type = this.getType(p, 1);
+                    if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
+                        s = type + ' ' + s;
                     }
                     paramTerms.push(s);
                 }
             }
 
             var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
-            if (options.phpStrictMode) {
-                functionName = functionName + ':' + _that.getType(returnParam, 1);
+            if (options.phpReturnType) {
+                functionName = functionName + ':' + this.getType(returnParam, 1);
             }
             terms.push(functionName);
 
@@ -823,7 +823,6 @@ define(function (require, exports, module) {
         codeWriter.writeLine("}");
     };
 
-
     /**
      * Write AnnotationType
      * @param {StringWriter} codeWriter
@@ -888,6 +887,27 @@ define(function (require, exports, module) {
 
         codeWriter.outdent();
         codeWriter.writeLine("}");
+    };
+
+    /**
+     * Is PHP allowed type hint ?
+     * @param {string} type
+     * @return {boolean}
+     */
+    PHPCodeGenerator.prototype.isAllowedTypeHint = function (type) {
+        switch(type) {
+            case "bool":
+            case "boolean":
+            case "int":
+            case "integer":
+            case "float":
+            case "double":
+            case "string":
+            case "resource":
+                return false;
+            default:
+                return true;
+        }
     };
 
     /**
