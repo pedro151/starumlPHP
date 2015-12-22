@@ -393,7 +393,7 @@ define(function (require, exports, module) {
                     terms.push(visibility);
                 }
                 terms.push("function __construct()");
-                codeWriter.writeLine(terms.join(" ") + " {");
+                codeWriter.writeLine(terms.join(" ") + "\n{");
                 codeWriter.writeLine("}");
             }
         }
@@ -491,7 +491,7 @@ define(function (require, exports, module) {
             if (skipBody === true || _.contains(_modifiers, "abstract")) {
                 codeWriter.writeLine(terms.join(" ") + ";");
             } else {
-                codeWriter.writeLine(terms.join(" ") + " {");
+                codeWriter.writeLine(terms.join(" ") + "\n{");
                 codeWriter.indent();
 
                 //spacification
@@ -591,7 +591,7 @@ define(function (require, exports, module) {
             terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
 
             // body
-            codeWriter.writeLine(terms.join(" ") + " {");
+            codeWriter.writeLine(terms.join(" ") + "\n{");
             codeWriter.indent();
 
             codeWriter.writeLine("// TODO implement here");
@@ -643,7 +643,7 @@ define(function (require, exports, module) {
                     return e.name;
                 }).join(", "));
         }
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.writeLine();
         codeWriter.indent();
 
@@ -740,7 +740,7 @@ define(function (require, exports, module) {
                     return e.name;
                 }).join(", "));
         }
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.writeLine();
         codeWriter.indent();
 
@@ -811,7 +811,7 @@ define(function (require, exports, module) {
         terms.push("enum");
         terms.push(elem.name);
 
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.indent();
 
         // Literals
@@ -851,7 +851,7 @@ define(function (require, exports, module) {
         terms.push("@interface");
         terms.push(elem.name);
 
-        codeWriter.writeLine(terms.join(" ") + " {");
+        codeWriter.writeLine(terms.join(" ") + "\n{");
         codeWriter.writeLine();
         codeWriter.indent();
 
