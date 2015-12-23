@@ -29,7 +29,7 @@ define(function (require, exports, module) {
      * @constructor
      */
     function CodeWriter(indentString) {
-        
+
         /** @member {Array.<string>} lines */
         this.lines = [];
 
@@ -38,38 +38,83 @@ define(function (require, exports, module) {
 
         /** @member {Array.<string>} indentations */
         this.indentations = [];
+
+        /** @member {Array} section */
+        this.sections = [];
     }
 
     /**
      * Indent
-     */    
+     */
     CodeWriter.prototype.indent = function () {
         this.indentations.push(this.indentString);
     };
 
     /**
      * Outdent
-     */    
+     */
     CodeWriter.prototype.outdent = function () {
         this.indentations.splice(this.indentations.length-1, 1);
     };
 
     /**
+     * Add named section to ba able to write lines in it
+     * @param {string} line
+     * @param {boolean} uniqueItems
+     */
+    CodeWriter.prototype.addSection = function (name, uniqueItems) {
+        uniqueItems = uniqueItems || false;
+
+        if (!_.contains(this.sections, {name: name})) {
+            this.sections.push({
+                name: name,
+                line: this.lines.length,
+                indentations: _.clone(this.indentations),
+                insertEmptyLine: true,
+                uniqueItems: uniqueItems,
+                items: []
+            });
+        }
+    };
+
+    /**
+     * Write a line in section
+     * @param {string} line
+     * @param {string} name
+     */
+    CodeWriter.prototype.writeLineInSection = function (line, name) {
+        var section = _.findWhere(this.sections, {name: name});
+        if (section) {
+            if (line && (!section.uniqueItems || !_.contains(section.items, line))) {
+                this.lines.splice(section.line, 0, section.indentations.join("") + line);
+                section.items.push(line);
+            } else {
+                this.lines.splice(section.line, 0, "");
+            }
+            section.line++;
+            if (section.insertEmptyLine) {
+                this.lines.splice(section.line, 0, "");
+                section.insertEmptyLine = false;
+            }
+        }
+    };
+
+    /**
      * Write a line
      * @param {string} line
-     */    
+     */
     CodeWriter.prototype.writeLine = function (line) {
         if (line) {
-            this.lines.push(this.indentations.join("") + line);    
+            this.lines.push(this.indentations.join("") + line);
         } else {
             this.lines.push("");
-        }        
+        }
     };
 
     /**
      * Return as all string data
      * @return {string}
-     */    
+     */
     CodeWriter.prototype.getData = function () {
         return this.lines.join("\n");
     };
