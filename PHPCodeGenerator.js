@@ -18,7 +18,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
- *
  */
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, regexp: true */
@@ -362,6 +361,7 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.writePackageDeclaration = function (codeWriter, elem, options) {
         var pathItems = [];
+        this.namespace = null;
         pathItems = this.getNamespaces(elem);
         if (pathItems.length > 0) {
             pathItems.push(elem.name);
