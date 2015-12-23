@@ -484,7 +484,7 @@ define(function (require, exports, module) {
                     var typeHint = type;
                     if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
                         if (type.split("\\").length - 1 > 1) {
-                            if(!SEPARATE_NAMESPACE+this.namespace != type){
+                            if(SEPARATE_NAMESPACE+this.namespace != type){
                             	codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
                             }
                             typeHint = typeHint.replace(/^.*\\+/, "");
