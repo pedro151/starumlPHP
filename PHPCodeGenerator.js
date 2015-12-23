@@ -198,9 +198,6 @@ define(function (require, exports, module) {
         if (elem.isFinalSpecification === true || elem.isLeaf === true) {
             modifiers.push("final");
         }
-        if (elem.concurrency === UML.CCK_CONCURRENT) {
-            modifiers.push("synchronized");
-        }
         // transient
         // volatile
         // strictfp
@@ -355,6 +352,8 @@ define(function (require, exports, module) {
         }
     };
 
+    var namespace=null;
+
     /**
      * Write Package Declaration
      * @param {StringWriter} codeWriter
@@ -362,15 +361,14 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writePackageDeclaration = function (codeWriter, elem, options) {
-        var path = null;
         var pathItems = [];
         pathItems = this.getNamespaces(elem);
         if (pathItems.length > 0) {
             pathItems.push(elem.name);
-            path = pathItems.join(SEPARATE_NAMESPACE);
+            this.namespace = pathItems.join(SEPARATE_NAMESPACE);
         }
-        if (path) {
-            codeWriter.writeLine("namespace " + path + ";");
+        if (this.namespace) {
+            codeWriter.writeLine("namespace " + this.namespace + ";");
         }
     };
 
@@ -486,7 +484,9 @@ define(function (require, exports, module) {
                     var typeHint = type;
                     if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
                         if (type.split("\\").length - 1 > 1) {
-                            codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
+                            if(!SEPARATE_NAMESPACE+this.namespace != type){
+                            	codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
+                            }
                             typeHint = typeHint.replace(/^.*\\+/, "");
                         }
                         s = typeHint + " " + s;
