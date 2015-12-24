@@ -138,6 +138,7 @@ define(function (require, exports, module) {
             codeWriter.writeLine("<?php\n");
             this.writePackageDeclaration(codeWriter, elem, options);
             codeWriter.writeLine();
+            codeWriter.addSection("uses");
             this.writeInterface(codeWriter, elem, options);
             file = FileSystem.getFileForPath(fullPath);
             FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
@@ -725,8 +726,7 @@ define(function (require, exports, module) {
 
         codeWriter.outdent();
         codeWriter.lines.pop();
-        codeWriter.writeLine("}");
-        codeWriter.writeLine();
+        codeWriter.writeLine("}\n");
     };
 
 
@@ -801,7 +801,8 @@ define(function (require, exports, module) {
         }
 
         codeWriter.outdent();
-        codeWriter.writeLine("}");
+        codeWriter.lines.pop();
+        codeWriter.writeLine("}\n");
     };
 
     /**
@@ -837,7 +838,8 @@ define(function (require, exports, module) {
         codeWriter.writeLine(literals.join(" ") + "\n");
 
         codeWriter.outdent();
-        codeWriter.writeLine("}");
+        codeWriter.lines.pop();
+        codeWriter.writeLine("}\n");
     };
 
     /**
