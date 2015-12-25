@@ -21,6 +21,9 @@
  *
  */
 
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, regexp: true */
+/*global define, _ */
+
 define(function (require, exports, module) {
     "use strict";
 
@@ -34,7 +37,7 @@ define(function (require, exports, module) {
         this.lines = [];
 
         /** @member {string} indentString */
-        this.indentString = (indentString ? indentString : "    "); // default 4 spaces
+        this.indentString = indentString || "    "; // default 4 spaces
 
         /** @member {Array.<string>} indentations */
         this.indentations = [];
@@ -54,7 +57,7 @@ define(function (require, exports, module) {
      * Outdent
      */
     CodeWriter.prototype.outdent = function () {
-        this.indentations.splice(this.indentations.length-1, 1);
+        this.indentations.splice(this.indentations.length - 1, 1);
     };
 
     /**

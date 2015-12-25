@@ -21,7 +21,7 @@
  */
 
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, regexp: true */
-/*global define, $, _, window, staruml, type, document, php7 */
+/*global define, $, _, window, staruml, type, document, php7, app */
 
 define(function (require, exports, module) {
     "use strict";
@@ -36,7 +36,7 @@ define(function (require, exports, module) {
 
     var CodeGenUtils = require("CodeGenUtils");
 
-    //constante for separate namespace on code
+    //constant for separate namespace on code
     var SEPARATE_NAMESPACE = '\\';
 
     /**
@@ -274,7 +274,7 @@ define(function (require, exports, module) {
         var _namespace = "";
         var _document = ((typeof document) !== 'undefined') ? 0 : 1;
 
-        if(elem == null){
+        if (elem === null) {
             return _type;
         }
 
@@ -282,21 +282,21 @@ define(function (require, exports, module) {
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
-				_namespace =_.map(this.getNamespaces (elem.reference), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+                _namespace = _.map(this.getNamespaces(elem.reference), function (e) { return e; }).join(SEPARATE_NAMESPACE);
 
-                if(_namespace!==""){
-		    	    _namespace = SEPARATE_NAMESPACE+_namespace;
-		        }
-                 _type = _namespace + SEPARATE_NAMESPACE + _type;
+                if (_namespace !== "") {
+                    _namespace = SEPARATE_NAMESPACE + _namespace;
+                }
+                _type = _namespace + SEPARATE_NAMESPACE + _type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
-				_namespace =_.map(this.getNamespaces (elem.type), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+                _namespace = _.map(this.getNamespaces(elem.type), function (e) { return e; }).join(SEPARATE_NAMESPACE);
 
-            if(_namespace!==""){
-		    	_namespace = SEPARATE_NAMESPACE+_namespace;
-		    }
+                if (_namespace !== "") {
+                    _namespace = SEPARATE_NAMESPACE + _namespace;
+                }
                 _type = _namespace + SEPARATE_NAMESPACE + _type;
             } else if (_.isString(elem.type) && elem.type.length > 0) {
                 _type = elem.type;
@@ -305,10 +305,10 @@ define(function (require, exports, module) {
         // multiplicity
         if (elem.multiplicity && _type !== "void") {
             if (_.contains(["0..*", "1..*", "*"], elem.multiplicity.trim())) {
-                if (_document == 1) {
+                if (_document === 1) {
                     _type += "[]";
                 } else {
-                    _type = "array"
+                    _type = "array";
                 }
             }
         }
@@ -328,7 +328,7 @@ define(function (require, exports, module) {
             codeWriter.writeLine("/**");
             for (i = 0, len = lines.length; i < len; i++) {
                 terms = [" *"];
-                if (lines[i] != "") {
+                if (lines[i] !== "") {
                     terms.push(lines[i].trim());
                 }
                 codeWriter.writeLine(terms.join(" "));
@@ -338,11 +338,11 @@ define(function (require, exports, module) {
     };
 
     /**
-     * Write Spacification
+     * Write Specification
      * @param {StringWriter} codeWriter
      * @param {string} text
      */
-    PHPCodeGenerator.prototype.writeSpac = function (codeWriter, text) {
+    PHPCodeGenerator.prototype.writeSpec = function (codeWriter, text) {
         var i, len, lines;
         if (_.isString(text)) {
             lines = text.trim().split("\n");
@@ -352,7 +352,7 @@ define(function (require, exports, module) {
         }
     };
 
-    var namespace=null;
+    var namespace = null;
 
     /**
      * Write Package Declaration
@@ -385,7 +385,6 @@ define(function (require, exports, module) {
             if (elem.operations[i].name === "__construct") {
                 haveConstruct = true;
             }
-            ;
         }
         var _extends = this.getSuperClasses(elem);
 
@@ -510,9 +509,9 @@ define(function (require, exports, module) {
                 codeWriter.writeLine("{");
                 codeWriter.indent();
 
-                //spacification
+                //specification
                 if (elem.specification.length > 0) {
-                    this.writeSpac(codeWriter, elem.specification);
+                    this.writeSpec(codeWriter, elem.specification);
                 } else {
                     codeWriter.writeLine("// TODO: implement here");
 

@@ -12,9 +12,10 @@ PHP Code Generation
 
 Configurations optionals
 ------------------------
-* Strict Mode (PHP7)
+* Strict Mode (Type Hinting)
+* Return Type (PHP7)
 * PHPDoc
-* Append to file extencion
+* Append to file extension
 
 Features
 --------
