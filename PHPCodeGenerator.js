@@ -272,7 +272,7 @@ define(function (require, exports, module) {
     PHPCodeGenerator.prototype.getType = function (elem, document) {
         var _type = "void";
         var _namespace = "";
-        var _document = ((typeof document) !== 'undefined') ? 0 : 1;
+        var _document = (document !== undefined) ? 0 : 1;
 
         if (elem === null) {
             return _type;
@@ -441,12 +441,39 @@ define(function (require, exports, module) {
     };
 
     /**
+     * Write Methods for Abstract parent and Interfaces
+     * @param {StringWriter} codeWriter
+     * @param {type.Model} elem
+     * @param {Object} options
+     * @param {boolean} onlyAbstract
+     */
+    PHPCodeGenerator.prototype.writeSuperMethods= function (codeWriter, elem, options, methods, onlyAbstract) {
+        onlyAbstract = onlyAbstract || false;
+        for (var i = 0, len = elem.operations.length; i < len; i++) {
+            var method = elem.operations[i];
+            if (method !== undefined && !_.contains(methods, method.name) && !onlyAbstract || method.isAbstract === true) {
+                var clone = _.clone(method);
+                if (onlyAbstract) {
+                    clone.isAbstract = false;
+                }
+                clone.documentation = "@inheritDoc";
+                var implemented = this.writeMethod(codeWriter, clone, options, false, false);
+                if (implemented) {
+                    codeWriter.writeLine();
+                    methods.push(method.name);
+                }
+            }
+        }
+    };
+
+    /**
      * Write Method
      * @param {StringWriter} codeWriter
      * @param {type.Model} elem
      * @param {Object} options
      * @param {boolean} skipBody
      * @param {boolean} skipParams
+     * @return {boolean}
      */
     PHPCodeGenerator.prototype.writeMethod = function (codeWriter, elem, options, skipBody, skipParams) {
         if (elem.name.length > 0) {
@@ -539,83 +566,10 @@ define(function (require, exports, module) {
                 codeWriter.outdent();
                 codeWriter.writeLine("}");
             }
-        }
-    };
-
-
-    /**
-     * Write Method Abstract for SuperClass
-     * @param {StringWriter} codeWriter
-     * @param {type.Model} elem
-     * @param {Object} options
-     * @param {boolean} skipParams
-     */
-    PHPCodeGenerator.prototype.writeMethodSuperClass = function (codeWriter, _method, elem, options, skipParams) {
-
-        var haveMethodName = false;
-
-        // Methods
-        for (var a = 0, length = elem.operations.length; a < length; a++) {
-            if (elem.operations[a].name === _method.name) {
-                haveMethodName = true;
-            }
+            return true;
         }
 
-        if (_method.name.length > 0 && !haveMethodName) {
-            var terms = [];
-            var params = _method.getNonReturnParameters();
-            var returnParam = _method.getReturnParameter();
-            var _that = this;
-
-            // doc
-            var doc = _method.documentation.trim();
-            _.each(params, function (param) {
-                doc += "\n@param " + _that.getType(param) + " " + param.name + " " + param.documentation;
-            });
-            if (returnParam) {
-                doc += "\n@return " + this.getType(returnParam) + " " + returnParam.documentation;
-            }
-            this.writeDoc(codeWriter, doc, options);
-
-            // modifiers
-            var modifiers = [];
-            var visibility = this.getVisibility(_method);
-            if (visibility) {
-                modifiers.push(visibility);
-                terms.push(modifiers.join(" "));
-            }
-
-            terms.push("function");
-
-            // name + parameters
-            var paramTerms = [];
-            if (!skipParams) {
-                var i, len;
-                for (i = 0, len = params.length; i < len; i++) {
-                    var p = params[i];
-                    var s = "$" + p.name;
-                    if (options.phpStrictMode) {
-                        s = _that.getType(p, 1) + ' ' + s;
-                    }
-
-                    paramTerms.push(s);
-                }
-            }
-
-            var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
-            terms.push(_method.name + "(" + paramTerms.join(", ") + ")");
-
-            // body
-            codeWriter.writeLine(terms.join(" "));
-            codeWriter.writeLine("{");
-            codeWriter.indent();
-
-            codeWriter.writeLine("// TODO implement here");
-
-            codeWriter.outdent();
-            codeWriter.writeLine("}");
-        }
-
+        return false;
     };
 
     /**
@@ -656,8 +610,8 @@ define(function (require, exports, module) {
         var _implements = this.getSuperInterfaces(elem);
         if (_implements.length > 0) {
             terms.push("implements " + _.map(_implements, function (e) {
-                    return e.name;
-                }).join(", "));
+                return e.name;
+            }).join(", "));
         }
 
         codeWriter.writeLine(terms.join(" "));
@@ -690,20 +644,25 @@ define(function (require, exports, module) {
         }
 
         // Methods
+        var methods = [];
         for (i = 0, len = elem.operations.length; i < len; i++) {
-            this.writeMethod(codeWriter, elem.operations[i], options, false, false);
-            codeWriter.writeLine();
-        }
-
-        if (typeof  _superClass !== "undefined") {
-            // Methods
-            for (var i = 0, len = _superClass.operations.length; i < len; i++) {
-                var _method = _superClass.operations[i];
-                if (typeof _method !== "undefined" && _method.isAbstract === true) {
-                    this.writeMethodSuperClass(codeWriter, _method, elem, options, false);
-                }
+            var implemented = this.writeMethod(codeWriter, elem.operations[i], options, false, false);
+            if (implemented) {
+                codeWriter.writeLine();
+                methods.push(elem.operations[i].name);
             }
         }
+
+        if (_superClass !== undefined) {
+            this.writeSuperMethods(codeWriter, _superClass, options, methods, true);
+        }
+
+        if (_implements.length > 0) {
+            for (i = 0, len = _implements.length; i < len; i++) {
+                this.writeSuperMethods(codeWriter, _implements[i], options, methods);
+            }
+        }
+
         // Inner Definitions
         for (i = 0, len = elem.ownedElements.length; i < len; i++) {
             var def = elem.ownedElements[i];
