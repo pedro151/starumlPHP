@@ -365,7 +365,6 @@ define(function (require, exports, module) {
         this.namespace = null;
         pathItems = this.getNamespaces(elem);
         if (pathItems.length > 0) {
-            pathItems.push(elem.name);
             this.namespace = pathItems.join(SEPARATE_NAMESPACE);
         }
         if (this.namespace) {
