@@ -506,6 +506,7 @@ define(function (require, exports, module) {
                 for (i = 0, len = params.length; i < len; i++) {
                     var p = params[i];
                     var s = "$" + p.name;
+                    var defaultValue = p.defaultValue;
                     var type = this.getType(p, 1);
                     var typeHint = type;
                     if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
@@ -516,6 +517,10 @@ define(function (require, exports, module) {
                             typeHint = typeHint.replace(/^.*\\+/, "");
                         }
                         s = typeHint + " " + s;
+                    }
+
+                    if(defaultValue.length > 0){
+                        s += " = " + defaultValue;
                     }
                     paramTerms.push(s);
                 }
