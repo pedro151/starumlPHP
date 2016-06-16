@@ -794,13 +794,13 @@ define(function (require, exports, module) {
             literals.push(elem.literals[i].name);
             literals.push("=");
             literals.push(i);
-            literlas.push(";");
+            literals.push(";");
         }
 
         codeWriter.writeLine(literals.join(" ") + "\n");
 
         codeWriter.outdent();
-        codeWriter.lines.pop();
+        //codeWriter.lines.pop();
         codeWriter.writeLine("}\n");
     };
 
