@@ -35,6 +35,12 @@ define(function (require, exports, module) {
             type: "Check",
             default: true
         },
+        "php.gen.phpDoctrineAnnotations": {
+            text: "Doctrine annotations",
+            description: "Generate Doctrine 2 ORM docblock annotations.",
+            type: "Check",
+            default: false
+        },
         "php.gen.phpStrictMode": {
             text: "Strict Mode",
             description: "Generate PHP Strict Mode.",
@@ -85,6 +91,7 @@ define(function (require, exports, module) {
             classExtension : PreferenceManager.get("php.gen.classExtension"),
             interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension"),
             phpStrictMode : PreferenceManager.get("php.gen.phpStrictMode"),
+            phpDoctrineAnnotations : PreferenceManager.get("php.gen.phpDoctrineAnnotations"),
             phpReturnType : PreferenceManager.get("php.gen.phpReturnType")
         };
     }

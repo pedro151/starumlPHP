@@ -56,6 +56,65 @@ define(function (require, exports, module) {
 
     }
 
+    String.prototype.toSnakeCase = function(){
+        var str = this.replace(/([A-Z])/g, function($1){return '_' + $1.toLowerCase();});
+
+        return '_' === str.substr(0, 1) ? str.substr(1) : str;
+    };
+
+    /**
+     * @see Annotations Reference http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/annotations-reference.html#annref-column
+     * @see Schema-Representation http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html
+     * 
+     * @param {type.Model} elem
+     * @return {string}     
+     */
+    PHPCodeGenerator.prototype.getDoctrineClassAnnotations = function (elem) {
+        return "\n" + '@ORM\\Table(name="' + elem.name.toSnakeCase() + '")';
+    };
+
+    /**
+     * @see Annotations Reference http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/annotations-reference.html#annref-column
+     * @see Schema-Representation http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html
+     * 
+     * @param {type.Model} elem
+     * @return {string}      
+     */
+    PHPCodeGenerator.prototype.getDoctrineMemberVariableAnnotations = function (elem) {
+        var annotations,
+            attrs = [],
+            attrOptions = [],
+            type = this.getType(elem);
+
+        // Main attributes
+        attrs.push('name="' + elem.name.toSnakeCase() + '"');
+        attrs.push('type="' + type + '"');
+        if (elem.isUnique) {
+            attrs.push('unique=true');
+        }
+
+        // Special options attribute
+        if (elem.defaultValue.length > 0) {
+            if ('string' === type || 'text' === type) { // Add "" around for string
+                elem.defaultValue = '"' + elem.defaultValue + '"';
+            }
+
+            attrOptions.push('"default":' + elem.defaultValue);
+        }
+        if (attrOptions.length > 0) {
+            attrs.push('options={' + attrOptions.join(', ') + '}');
+        }
+
+        // Create annotations
+        annotations = "\n\n" + '@ORM\\Column(' + attrs.join(', ') + ')';
+
+        if (elem.isID) {
+            annotations += "\n" + '@ORM\\Id' + "\n" + '@ORM\\GeneratedValue(strategy="AUTO")';
+        }
+
+        return annotations;
+    };
+
     /**
      * Return Indent String based on options
      * @param {Object} options
@@ -416,6 +475,11 @@ define(function (require, exports, module) {
             var terms = [];
             // doc
             var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim();
+
+            if (options.phpDoctrineAnnotations) {
+                doc += this.getDoctrineMemberVariableAnnotations(elem);
+            }
+
             this.writeDoc(codeWriter, doc, options);
 
             // modifiers const
@@ -587,6 +651,9 @@ define(function (require, exports, module) {
 
         // Doc
         var doc = elem.documentation.trim();
+        if (options.phpDoctrineAnnotations) {
+            doc += this.getDoctrineClassAnnotations(elem);
+        }
         if (ProjectManager.getProject().author && ProjectManager.getProject().author.length > 0) {
             doc += "\n@author " + ProjectManager.getProject().author;
         }
