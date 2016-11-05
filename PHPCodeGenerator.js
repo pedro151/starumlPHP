@@ -47,8 +47,9 @@ define(function (require, exports, module) {
      *
      * @param {type.UMLPackage} baseModel
      * @param {string} basePath generated files and directories to be placed
+     * @param {Object} options
      */
-    function PHPCodeGenerator(baseModel, basePath) {
+    function PHPCodeGenerator(baseModel, basePath, options) {
 
         /** @member {type.Model} */
         this.baseModel = baseModel;
@@ -56,6 +57,8 @@ define(function (require, exports, module) {
         /** @member {string} */
         this.basePath = basePath;
 
+        /** @member {Boolean} */
+        this.hasDoctrineBundleAnnotations = 2 === options.phpDoctrineAnnotations ? true : false;
     }
 
     String.prototype.toSnakeCase = function(){
@@ -153,8 +156,8 @@ define(function (require, exports, module) {
         if (elem instanceof type.UMLPackage) {
             fullPath = path + "/" + elem.name;
 
-            if (2 === options.phpDoctrineAnnotations) { // Symfony (DoctrineBundle)
-                DOCTRINE_PREFIX += 'ORM\\'; // DoctrineBundle annotation
+            if (this.hasDoctrineBundleAnnotations) {
+                DOCTRINE_PREFIX += 'ORM\\';
                 fullPath += '/Entity';
             }
 
@@ -193,6 +196,7 @@ define(function (require, exports, module) {
                 this.writePackageDeclaration(codeWriter, elem, options);
                 codeWriter.writeLine();
                 codeWriter.addSection("uses");
+                this.writePackageImports(codeWriter, elem, options);
                 this.writeClass(codeWriter, elem, options);
                 file = FileSystem.getFileForPath(fullPath);
                 FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
@@ -435,16 +439,25 @@ define(function (require, exports, module) {
             this.namespace = pathItems.join(SEPARATE_NAMESPACE);
         }
         if (this.namespace) {
-            if (2 === options.phpDoctrineAnnotations) {
+            if (this.hasDoctrineBundleAnnotations) {
                 this.namespace += '\\Entity';
             }
 
             codeWriter.writeLine("namespace " + this.namespace + ";");
         }
-
-        if (2 === options.phpDoctrineAnnotations) {
+    };
+    
+    /**
+     * Write Package Namespaces imports
+     * 
+     * @param {StringWriter} codeWriter
+     * @param {type.Model} elem
+     * @param {Object} options
+     */
+    PHPCodeGenerator.prototype.writePackageImports = function (codeWriter, elem, options) {
+        if (this.hasDoctrineBundleAnnotations) {
             codeWriter.writeLine();
-            codeWriter.writeLine('use Doctrine\\ORM\\Mapping as ORM;');
+            codeWriter.writeLineInSection('use Doctrine\\ORM\\Mapping as ORM;', 'uses');
         }
     };
 
@@ -983,7 +996,7 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     function generate(baseModel, basePath, options) {
-        var phpCodeGenerator = new PHPCodeGenerator(baseModel, basePath),
+        var phpCodeGenerator = new PHPCodeGenerator(baseModel, basePath, options),
             result = new $.Deferred();
 
         return phpCodeGenerator.generate(baseModel, basePath, options);
