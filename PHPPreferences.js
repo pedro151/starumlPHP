@@ -25,58 +25,67 @@ define(function (require, exports, module) {
     var preferenceId = "php";
 
     var phpPreferences = {
-        "php.gen": {
-            text: "PHP Code Generation",
+        "php.syntax": {
+            text: "Syntax",
             type: "Section"
         },
-        "php.gen.phpDoc": {
-            text: "PHPDoc",
-            description: "Generate PHPDoc comments.",
-            type: "Check",
-            default: true
-        },
-        "php.gen.phpDoctrineAnnotations": {
-            text: "Doctrine annotations",
-            description: "Generate Doctrine 2 ORM docblock annotations.",
-            type: "Check",
-            default: false
-        },
-        "php.gen.phpStrictMode": {
+        "php.syntax.phpStrictMode": {
             text: "Strict Mode",
             description: "Generate PHP Strict Mode.",
             type: "Check",
             default: true
         },
-        "php.gen.phpReturnType": {
+        "php.syntax.phpReturnType": {
             text: "Return Type",
             description: "Generate PHP Return Type (e.q. PHP7).",
             type: "Check",
             default: true
         },
-        "php.gen.useTab": {
+        "php.syntax.useTab": {
             text: "Use Tab",
             description: "Use Tab for indentation instead of spaces.",
             type: "Check",
             default: false
         },
-        "php.gen.indentSpaces": {
+        "php.syntax.indentSpaces": {
             text: "Indent Spaces",
             description: "Number of spaces for indentation.",
             type: "Number",
             default: 4
         },
-        "php.gen.classExtension": {
+        "php.syntax.classExtension": {
             text: "Append to class filename",
             description: "Insert value into class filename extensions (e.g. MyClass.class.php)",
             type: "String",
             default: ""
         },
-        "php.gen.interfaceExtension": {
+        "php.syntax.interfaceExtension": {
             text: "Append to interface filename",
             description: "Insert value into interface filename extensions (e.g. MyInterface.interface.php)",
             type: "String",
             default: ""
-        }
+        },
+        "php.doc": {
+            text: "Documentation",
+            type: "Section"
+        },
+        "php.doc.phpDoc": {
+            text: "PHPDoc",
+            description: "Generate PHPDoc comments.",
+            type: "Check",
+            default: true
+        },
+        "php.doc.phpDoctrineAnnotations": {
+            text: "Doctrine annotations",
+            description: "Generate Doctrine 2 ORM docblock annotations.",
+            type: "Dropdown",
+            default: 0,
+            options: [
+                {value: 0, text: "None"},
+                {value: 1, text: "Doctrine"},
+                {value: 2, text: "Symfony (DoctrineBundle)"},
+            ]
+        },
     };
 
     function getId() {
@@ -85,14 +94,15 @@ define(function (require, exports, module) {
 
     function getGenOptions() {
         return {
-            phpDoc       : PreferenceManager.get("php.gen.phpDoc"),
-            useTab        : PreferenceManager.get("php.gen.useTab"),
-            indentSpaces  : PreferenceManager.get("php.gen.indentSpaces"),
-            classExtension : PreferenceManager.get("php.gen.classExtension"),
-            interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension"),
-            phpStrictMode : PreferenceManager.get("php.gen.phpStrictMode"),
-            phpDoctrineAnnotations : PreferenceManager.get("php.gen.phpDoctrineAnnotations"),
-            phpReturnType : PreferenceManager.get("php.gen.phpReturnType")
+            phpStrictMode : PreferenceManager.get("php.syntax.phpStrictMode"),
+            phpReturnType : PreferenceManager.get("php.syntax.phpReturnType"),
+            useTab        : PreferenceManager.get("php.syntax.useTab"),
+            indentSpaces  : PreferenceManager.get("php.syntax.indentSpaces"),
+            classExtension : PreferenceManager.get("php.syntax.classExtension"),
+            interfaceExtension : PreferenceManager.get("php.syntax.interfaceExtension"),
+
+            phpDoc       : PreferenceManager.get("php.doc.phpDoc"),
+            phpDoctrineAnnotations : parseInt(PreferenceManager.get("php.doc.phpDoctrineAnnotations"))
         };
     }
 

@@ -39,6 +39,8 @@ define(function (require, exports, module) {
     //constant for separate namespace on code
     var SEPARATE_NAMESPACE = '\\';
 
+    var DOCTRINE_PREFIX = '@';
+
     /**
      * PHP Code Generator
      * @constructor
@@ -70,7 +72,7 @@ define(function (require, exports, module) {
      * @return {string}     
      */
     PHPCodeGenerator.prototype.getDoctrineClassAnnotations = function (elem) {
-        return "\n" + '@ORM\\Table(name="' + elem.name.toSnakeCase() + '")';
+        return "\n" + DOCTRINE_PREFIX + 'Table(name="' + elem.name.toSnakeCase() + '")' + "\n" + DOCTRINE_PREFIX + 'Entity';
     };
 
     /**
@@ -106,10 +108,10 @@ define(function (require, exports, module) {
         }
 
         // Create annotations
-        annotations = "\n\n" + '@ORM\\Column(' + attrs.join(', ') + ')';
+        annotations = "\n\n" + DOCTRINE_PREFIX + 'Column(' + attrs.join(', ') + ')';
 
         if (elem.isID) {
-            annotations += "\n" + '@ORM\\Id' + "\n" + '@ORM\\GeneratedValue(strategy="AUTO")';
+            annotations += "\n" + DOCTRINE_PREFIX + 'Id' + "\n" + DOCTRINE_PREFIX + 'GeneratedValue(strategy="AUTO")';
         }
 
         return annotations;
@@ -150,6 +152,12 @@ define(function (require, exports, module) {
         // Package
         if (elem instanceof type.UMLPackage) {
             fullPath = path + "/" + elem.name;
+
+            if (2 === options.phpDoctrineAnnotations) { // Symfony (DoctrineBundle)
+                DOCTRINE_PREFIX += 'ORM\\'; // DoctrineBundle annotation
+                fullPath += '/Entity';
+            }
+
             directory = FileSystem.getDirectoryForPath(fullPath);
             directory.create(function (err, stat) {
                 if (!err) {
@@ -427,7 +435,16 @@ define(function (require, exports, module) {
             this.namespace = pathItems.join(SEPARATE_NAMESPACE);
         }
         if (this.namespace) {
+            if (2 === options.phpDoctrineAnnotations) {
+                this.namespace += '\\Entity';
+            }
+
             codeWriter.writeLine("namespace " + this.namespace + ";");
+        }
+
+        if (2 === options.phpDoctrineAnnotations) {
+            codeWriter.writeLine();
+            codeWriter.writeLine('use Doctrine\\ORM\\Mapping as ORM;');
         }
     };
 
@@ -476,7 +493,7 @@ define(function (require, exports, module) {
             // doc
             var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim();
 
-            if (options.phpDoctrineAnnotations) {
+            if (options.phpDoctrineAnnotations > 0) {
                 doc += this.getDoctrineMemberVariableAnnotations(elem);
             }
 
@@ -510,7 +527,7 @@ define(function (require, exports, module) {
      * @param {Object} options
      * @param {boolean} onlyAbstract
      */
-    PHPCodeGenerator.prototype.writeSuperMethods= function (codeWriter, elem, options, methods, onlyAbstract) {
+    PHPCodeGenerator.prototype.writeSuperMethods = function (codeWriter, elem, options, methods, onlyAbstract) {
         onlyAbstract = onlyAbstract || false;
         for (var i = 0, len = elem.operations.length; i < len; i++) {
             var method = elem.operations[i];
@@ -651,7 +668,7 @@ define(function (require, exports, module) {
 
         // Doc
         var doc = elem.documentation.trim();
-        if (options.phpDoctrineAnnotations) {
+        if (options.phpDoctrineAnnotations > 0) {
             doc += this.getDoctrineClassAnnotations(elem);
         }
         if (ProjectManager.getProject().author && ProjectManager.getProject().author.length > 0) {
@@ -966,8 +983,9 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     function generate(baseModel, basePath, options) {
-        var result = new $.Deferred();
-        var phpCodeGenerator = new PHPCodeGenerator(baseModel, basePath);
+        var phpCodeGenerator = new PHPCodeGenerator(baseModel, basePath),
+            result = new $.Deferred();
+
         return phpCodeGenerator.generate(baseModel, basePath, options);
     }
 
