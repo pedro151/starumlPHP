@@ -27,6 +27,132 @@
 define(function (require, exports, module) {
     "use strict";
 
+    String.prototype.toSnakeCase = function() {
+        var str = this.replace(/([A-Z])/g, function($1){return '_' + $1.toLowerCase();});
+
+        return '_' === str.substr(0, 1) ? str.substr(1) : str;
+    };
+
+    /**
+     * DoctrineAnnotationGenerator
+     * @constructor
+     */
+    function DoctrineAnnotationGenerator(type) {
+
+        /** @member {integer} type */
+        this.type = type;
+
+        /** @member {Boolean} isBundle */
+        this.isBundle = 2 === type ? true : false;
+    }
+
+    DoctrineAnnotationGenerator.prototype.getPrefix = function () {
+        var prefix;
+
+        switch (this.type) {
+            case 1:
+                prefix = '@';
+                break;
+
+            case 2:
+                prefix = '@ORM\\';
+                break;
+
+            default:
+                prefix = '';
+                break;
+        }
+
+        return prefix;
+    };
+
+    DoctrineAnnotationGenerator.prototype.getSubfolder = function (format) {
+        var level;
+
+        switch (this.type) {
+            case 2:
+                level = 'Entity';
+
+                switch (format) {
+                    case 'namespace':
+                        level = '\\' + level;
+                        break;
+
+                    default: // Folder style
+                        level = '/' + level;
+                        break;
+                }
+                break;
+
+            default:
+                level = '';
+                break;
+        }
+
+        return level;
+    };
+
+    /**
+     * @return {Array}     
+     */
+    DoctrineAnnotationGenerator.prototype.getImports = function() {
+        return 2 === this.type ? ['Doctrine\\ORM\\Mapping as ORM'] : [];
+    };
+
+    /**
+     * @see Annotations Reference http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/annotations-reference.html#annref-column
+     * @see Schema-Representation http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html
+     * 
+     * @param {type.Model} elem
+     * @return {string}     
+     */
+    DoctrineAnnotationGenerator.prototype.getClassAnnotations = function(elem) {
+        return "\n" + this.getPrefix() + 'Table(name="' + elem.name.toSnakeCase() + '")' + "\n" + this.getPrefix() + 'Entity';
+    };
+
+    /**
+     * @see Annotations Reference http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/annotations-reference.html#annref-column
+     * @see Schema-Representation http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html
+     * 
+     * @param {type.Model} elem
+     * @return {string}      
+     */
+    DoctrineAnnotationGenerator.prototype.getMemberVariableAnnotations = function (elem, type) {
+        var annotations = '',
+            attrs = [],
+            attrOptions = [];
+
+        if (this.type > 0) {
+            // Main attributes
+            attrs.push('name="' + elem.name.toSnakeCase() + '"');
+            attrs.push('type="' + type + '"');
+            if (elem.isUnique) {
+                attrs.push('unique=true');
+            }
+
+            // Special options attribute
+            if (elem.defaultValue.length > 0) {
+                if ('string' === type || 'text' === type) { // Add "" around for string
+                    elem.defaultValue = '"' + elem.defaultValue + '"';
+                }
+
+                attrOptions.push('"default":' + elem.defaultValue);
+            }
+            if (attrOptions.length > 0) {
+                attrs.push('options={' + attrOptions.join(', ') + '}');
+            }
+
+            // Create annotations
+            annotations = "\n\n" + this.getPrefix() + 'Column(' + attrs.join(', ') + ')';
+
+            if (elem.isID) {
+                annotations += "\n" + this.getPrefix() + 'Id' + "\n" + this.getPrefix() + 'GeneratedValue(strategy="AUTO")';
+            }
+        }
+
+        return annotations;
+    };
+
     /**
      * CodeWriter
      * @constructor
@@ -123,5 +249,6 @@ define(function (require, exports, module) {
     };
 
     exports.CodeWriter = CodeWriter;
+    exports.DoctrineAnnotationGenerator = DoctrineAnnotationGenerator;
 
 });
