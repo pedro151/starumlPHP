@@ -28,7 +28,7 @@ define(function (require, exports, module) {
     "use strict";
 
     String.prototype.toSnakeCase = function() {
-        var str = this.replace(/([A-Z])/g, function($1){return '_' + $1.toLowerCase();});
+        var str = this.replace(/([A-Z])/g, function($1) {return '_' + $1.toLowerCase();});
 
         return '_' === str.substr(0, 1) ? str.substr(1) : str;
     };
@@ -95,7 +95,7 @@ define(function (require, exports, module) {
     /**
      * @return {Array}     
      */
-    DoctrineAnnotationGenerator.prototype.getImports = function() {
+    DoctrineAnnotationGenerator.prototype.getImports = function () {
         return 2 === this.type ? ['Doctrine\\ORM\\Mapping as ORM'] : [];
     };
 
@@ -104,49 +104,102 @@ define(function (require, exports, module) {
      * @see Schema-Representation http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html
      * 
      * @param {type.Model} elem
+     * 
      * @return {string}     
      */
-    DoctrineAnnotationGenerator.prototype.getClassAnnotations = function(elem) {
+    DoctrineAnnotationGenerator.prototype.getClassAnnotations = function (elem) {
         return "\n" + this.getPrefix() + 'Table(name="' + elem.name.toSnakeCase() + '")' + "\n" + this.getPrefix() + 'Entity';
     };
+
+    /**
+     * Generate the simple annotations (integer, boolean...) for a member variable
+     * 
+     * @param {type.Model} elem
+     * @param {string} type
+     * 
+     * @return {string}
+     */
+    DoctrineAnnotationGenerator.prototype.generateAnnotationsSimple = function (elem, type) {
+        var annotations,
+            attrs = [],
+            attrOptions = [];
+
+        // Main attributes
+        attrs.push('name="' + elem.name.toSnakeCase() + '"');
+        attrs.push('type="' + type + '"');
+        if (elem.isUnique) {
+            attrs.push('unique=true');
+        }
+
+        // Special options attribute
+        if (elem.defaultValue.length > 0) {
+            if ('string' === type || 'text' === type) { // Add "" around for string
+                elem.defaultValue = '"' + elem.defaultValue + '"';
+            }
+
+            attrOptions.push('"default":' + elem.defaultValue);
+        }
+        if (attrOptions.length > 0) {
+            attrs.push('options={' + attrOptions.join(', ') + '}');
+        }
+
+        // Create annotations
+        annotations = "\n\n" + this.getPrefix() + 'Column(' + attrs.join(', ') + ')';
+
+        if (elem.isID) {
+            annotations += "\n" + this.getPrefix() + 'Id' + "\n" + this.getPrefix() + 'GeneratedValue(strategy="AUTO")';
+        }
+
+        return annotations;
+    };
+
+    /**
+     * Generate reference annotations (OneToOne, OneToMany, ManyToOne, ManyToMany) for a member variable
+     * 
+     * @param {type.Model} aEndSource
+     * @param {type.UMLAssociation} association
+     * 
+     * @return {string} 
+     */
+    DoctrineAnnotationGenerator.prototype.generateAnnotationsReference = function (aEndSource, association) {
+        var aEndTarget = aEndSource === association.end1 ? association.end2 : association.end1,
+            attrs = [],
+            relation;
+
+        relation = ('1' === aEndTarget.multiplicity.substr(-1) ? 'One' : 'Many');
+        relation += 'To';
+        relation += ('1' === aEndSource.multiplicity.substr(-1) ? 'One' : 'Many');
+
+        attrs.push('targetEntity="' + aEndSource.reference.name + '"');
+        if ('Many' === relation.substr(-4)) { // Ends with 'Many'
+            attrs.push(('One' === relation.substr(0, 3) ? 'mappedBy' : 'invertedBy') + '="' + aEndTarget.name + '"');
+        }
+
+        // @TODO: add the @JoinTable annotation for ManyToMany
+
+        return "\n\n" + this.getPrefix() + relation + '(' + attrs.join(', ') + ')';
+    };
+
 
     /**
      * @see Annotations Reference http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/annotations-reference.html#annref-column
      * @see Schema-Representation http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/schema-representation.html
      * 
      * @param {type.Model} elem
-     * @return {string}      
+     * @param {string} type
+     * @param {type.UMLAssociation} association
+     * 
+     * @return {string}   
      */
-    DoctrineAnnotationGenerator.prototype.getMemberVariableAnnotations = function (elem, type) {
-        var annotations = '',
-            attrs = [],
-            attrOptions = [];
+    DoctrineAnnotationGenerator.prototype.getMemberVariableAnnotations = function (elem, type, association) {
+        var annotations = '';
 
         if (this.type > 0) {
-            // Main attributes
-            attrs.push('name="' + elem.name.toSnakeCase() + '"');
-            attrs.push('type="' + type + '"');
-            if (elem.isUnique) {
-                attrs.push('unique=true');
-            }
-
-            // Special options attribute
-            if (elem.defaultValue.length > 0) {
-                if ('string' === type || 'text' === type) { // Add "" around for string
-                    elem.defaultValue = '"' + elem.defaultValue + '"';
-                }
-
-                attrOptions.push('"default":' + elem.defaultValue);
-            }
-            if (attrOptions.length > 0) {
-                attrs.push('options={' + attrOptions.join(', ') + '}');
-            }
-
-            // Create annotations
-            annotations = "\n\n" + this.getPrefix() + 'Column(' + attrs.join(', ') + ')';
-
-            if (elem.isID) {
-                annotations += "\n" + this.getPrefix() + 'Id' + "\n" + this.getPrefix() + 'GeneratedValue(strategy="AUTO")';
+            // It means that the element is not a simple type, but another object, so we will have special annotations like @OneToMany
+            if ('undefined' === typeof(association)) {
+                annotations = this.generateAnnotationsSimple(elem, type);
+            } else {
+                annotations = this.generateAnnotationsReference(elem, association);
             }
         }
 

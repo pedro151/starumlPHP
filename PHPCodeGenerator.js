@@ -55,7 +55,7 @@ define(function (require, exports, module) {
         /** @member {string} */
         this.basePath = basePath;
 
-        /** @member {Boolean} */
+        /** @member {Object} */
         this.doctrineAnnotationGenerator = new CodeGenUtils.DoctrineAnnotationGenerator(options.phpDoctrineAnnotations);
 
     }
@@ -292,7 +292,7 @@ define(function (require, exports, module) {
                 if (_namespace !== "") {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
                 }
-                _type = _namespace + SEPARATE_NAMESPACE + _type;
+                _type = _namespace + this.doctrineAnnotationGenerator.getSubfolder('namespace') + SEPARATE_NAMESPACE + _type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
@@ -436,12 +436,13 @@ define(function (require, exports, module) {
      * @param {StringWriter} codeWriter
      * @param {type.Model} elem
      * @param {Object} options
+     * @param {type.UMLAssociation} association
      */
-    PHPCodeGenerator.prototype.writeMemberVariable = function (codeWriter, elem, options) {
+    PHPCodeGenerator.prototype.writeMemberVariable = function (codeWriter, elem, options, association) {
         if (elem.name.length > 0) {
             var terms = [];
             // doc
-            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.doctrineAnnotationGenerator.getMemberVariableAnnotations(elem, this.getType(elem));
+            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.doctrineAnnotationGenerator.getMemberVariableAnnotations(elem, this.getType(elem), association);
 
             this.writeDoc(codeWriter, doc, options);
 
@@ -666,10 +667,10 @@ define(function (require, exports, module) {
         for (i = 0, len = associations.length; i < len; i++) {
             var asso = associations[i];
             if (asso.end1.reference === elem && asso.end2.navigable === true) {
-                this.writeMemberVariable(codeWriter, asso.end2, options);
+                this.writeMemberVariable(codeWriter, asso.end2, options, asso);
                 codeWriter.writeLine();
             } else if (asso.end2.reference === elem && asso.end1.navigable === true) {
-                this.writeMemberVariable(codeWriter, asso.end1, options);
+                this.writeMemberVariable(codeWriter, asso.end1, options, asso);
                 codeWriter.writeLine();
             }
         }
