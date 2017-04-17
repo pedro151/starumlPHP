@@ -35,6 +35,7 @@ define(function (require, exports, module) {
         UML = app.getModule("uml/UML");
 
     var CodeGenUtils = require("CodeGenUtils");
+    var DoctrineAnnotationsGenerator = require("DoctrineAnnotationsGenerator");
 
     //constant for separate namespace on code
     var SEPARATE_NAMESPACE = '\\';
@@ -56,8 +57,7 @@ define(function (require, exports, module) {
         this.basePath = basePath;
 
         /** @member {Object} */
-        this.doctrineAnnotationGenerator = new CodeGenUtils.DoctrineAnnotationGenerator(options.phpDoctrineAnnotations);
-
+        this.doctrineAnnotationsGenerator = new DoctrineAnnotationsGenerator.DoctrineAnnotationsGenerator(options.phpDoctrineAnnotations);
     }
 
     /**
@@ -94,7 +94,7 @@ define(function (require, exports, module) {
 
         // Package
         if (elem instanceof type.UMLPackage) {
-            fullPath = path + "/" + elem.name + this.doctrineAnnotationGenerator.getSubfolder();
+            fullPath = path + "/" + elem.name + this.doctrineAnnotationsGenerator.getSubfolder();
             directory = FileSystem.getDirectoryForPath(fullPath);
             directory.create(function (err, stat) {
                 if (!err) {
@@ -292,7 +292,7 @@ define(function (require, exports, module) {
                 if (_namespace !== "") {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
                 }
-                _type = _namespace + this.doctrineAnnotationGenerator.getSubfolder('namespace') + SEPARATE_NAMESPACE + _type;
+                _type = _namespace + this.doctrineAnnotationsGenerator.getSubfolder('namespace') + SEPARATE_NAMESPACE + _type;
             }
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
@@ -373,7 +373,7 @@ define(function (require, exports, module) {
             this.namespace = pathItems.join(SEPARATE_NAMESPACE);
         }
         if (this.namespace) {
-            this.namespace += this.doctrineAnnotationGenerator.getSubfolder('namespace');
+            this.namespace += this.doctrineAnnotationsGenerator.getSubfolder('namespace');
 
             codeWriter.writeLine("namespace " + this.namespace + ";");
         }
@@ -387,7 +387,7 @@ define(function (require, exports, module) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writePackageImports = function (codeWriter, elem, options) {
-        var i, imports = this.doctrineAnnotationGenerator.getImports();
+        var i, imports = this.doctrineAnnotationsGenerator.getImports();
 
         if (imports.length > 0) {
             codeWriter.writeLine();
@@ -442,7 +442,7 @@ define(function (require, exports, module) {
         if (elem.name.length > 0) {
             var terms = [];
             // doc
-            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.doctrineAnnotationGenerator.getMemberVariableAnnotations(elem, this.getType(elem), association);
+            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.doctrineAnnotationsGenerator.getPropertyAnnotations(elem, this.getType(elem), association);
 
             this.writeDoc(codeWriter, doc, options);
 
@@ -614,7 +614,7 @@ define(function (require, exports, module) {
         var i, len, terms = [];
 
         // Doc
-        var doc = elem.documentation.trim() + this.doctrineAnnotationGenerator.getClassAnnotations(elem);
+        var doc = elem.documentation.trim() + this.doctrineAnnotationsGenerator.getClassAnnotations(elem);
         if (ProjectManager.getProject().author && ProjectManager.getProject().author.length > 0) {
             doc += "\n@author " + ProjectManager.getProject().author;
         }
