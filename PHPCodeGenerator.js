@@ -169,14 +169,14 @@ define(function (require, exports, module) {
      */
     PHPCodeGenerator.prototype.getVisibility = function (elem) {
         switch (elem.visibility) {
-        case UML.VK_PACKAGE:
-            return "";
-        case UML.VK_PUBLIC:
-            return "public";
-        case UML.VK_PROTECTED:
-            return "protected";
-        case UML.VK_PRIVATE:
-            return "private";
+            case UML.VK_PACKAGE:
+                return "";
+            case UML.VK_PUBLIC:
+                return "public";
+            case UML.VK_PROTECTED:
+                return "protected";
+            case UML.VK_PRIVATE:
+                return "private";
         }
         return null;
     };
@@ -282,7 +282,9 @@ define(function (require, exports, module) {
         if (elem instanceof type.UMLAssociationEnd) {
             if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
                 _type = elem.reference.name;
-                _namespace = _.map(this.getNamespaces(elem.reference), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+                _namespace = _.map(this.getNamespaces(elem.reference), function (e) {
+                    return e;
+                }).join(SEPARATE_NAMESPACE);
 
                 if (_namespace !== "") {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
@@ -292,7 +294,9 @@ define(function (require, exports, module) {
         } else {
             if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
                 _type = elem.type.name;
-                _namespace = _.map(this.getNamespaces(elem.type), function (e) { return e; }).join(SEPARATE_NAMESPACE);
+                _namespace = _.map(this.getNamespaces(elem.type), function (e) {
+                    return e;
+                }).join(SEPARATE_NAMESPACE);
 
                 if (_namespace !== "") {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
@@ -421,8 +425,7 @@ define(function (require, exports, module) {
             // modifiers const
             if (elem.isFinalSpecification === true || elem.isLeaf === true) {
                 terms.push("const " + elem.name.toUpperCase());
-            }
-            else {
+            } else {
                 // modifiers
                 var _modifiers = this.getModifiers(elem);
                 if (_modifiers.length > 0) {
@@ -446,7 +449,7 @@ define(function (require, exports, module) {
      * @param {Object} options
      * @param {boolean} onlyAbstract
      */
-    PHPCodeGenerator.prototype.writeSuperMethods= function (codeWriter, elem, options, methods, onlyAbstract) {
+    PHPCodeGenerator.prototype.writeSuperMethods = function (codeWriter, elem, options, methods, onlyAbstract) {
         onlyAbstract = onlyAbstract || false;
         for (var i = 0, len = elem.operations.length; i < len; i++) {
             var method = elem.operations[i];
@@ -511,15 +514,15 @@ define(function (require, exports, module) {
                     var typeHint = type;
                     if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
                         if (type.split("\\").length - 1 > 1) {
-                            if(SEPARATE_NAMESPACE+this.namespace != type){
-                            	codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
+                            if (SEPARATE_NAMESPACE + this.namespace != type) {
+                                codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
                             }
                             typeHint = typeHint.replace(/^.*\\+/, "");
                         }
                         s = typeHint + " " + s;
                     }
 
-                    if(defaultValue.length > 0){
+                    if (defaultValue.length > 0) {
                         s += " = " + defaultValue;
                     }
                     paramTerms.push(s);
@@ -528,7 +531,17 @@ define(function (require, exports, module) {
 
             var functionName = elem.name + "(" + paramTerms.join(", ") + ")";
             if (options.phpReturnType) {
-                functionName = functionName + ':' + this.getType(returnParam, 1);
+                var returnTypeName = this.getType(returnParam, 1);
+                if (returnTypeName.split("\\").length - 1 > 1) {
+                    var reg = SEPARATE_NAMESPACE + this.namespace + SEPARATE_NAMESPACE;
+                    reg = reg.replace(/\\/g, '\\\\');
+                    var regx = new RegExp('^' + reg);
+                    if (!regx.test(returnTypeName)) {
+                        codeWriter.writeLineInSection("use " + returnTypeName.replace(/^\\+/, "") + ";", "uses");
+                    }
+                    returnTypeName = returnTypeName.replace(/^.*\\+/, "");
+                }
+                functionName = functionName + ':' + returnTypeName;
             }
             terms.push(functionName);
 
@@ -712,8 +725,8 @@ define(function (require, exports, module) {
         var _extends = this.getSuperClasses(elem);
         if (_extends.length > 0) {
             terms.push("extends " + _.map(_extends, function (e) {
-                    return e.name;
-                }).join(", "));
+                return e.name;
+            }).join(", "));
         }
         codeWriter.writeLine(terms.join(" "));
         codeWriter.writeLine("{");
@@ -794,13 +807,13 @@ define(function (require, exports, module) {
             literals.push(elem.literals[i].name);
             literals.push("=");
             literals.push(i);
-            literals.push(";");
+            literlas.push(";");
         }
 
         codeWriter.writeLine(literals.join(" ") + "\n");
 
         codeWriter.outdent();
-        //codeWriter.lines.pop();
+        codeWriter.lines.pop();
         codeWriter.writeLine("}\n");
     };
 
@@ -876,14 +889,7 @@ define(function (require, exports, module) {
      * @return {boolean}
      */
     PHPCodeGenerator.prototype.isAllowedTypeHint = function (type) {
-        switch(type) {
-            case "bool":
-            case "boolean":
-            case "int":
-            case "integer":
-            case "float":
-            case "double":
-            case "string":
+        switch (type) {
             case "resource":
             case "void":
                 return false;
