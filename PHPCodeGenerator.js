@@ -280,7 +280,7 @@ define ( function ( require , exports , module ) {
      * @param {type.Model} elem
      * @return {string}
      */
-    PHPCodeGenerator.prototype.getType = function ( elem ) {
+    PHPCodeGenerator.prototype.getDocumentType = function ( elem ) {
         var _type      = "void";
         var _namespace = "";
 
@@ -326,8 +326,8 @@ define ( function ( require , exports , module ) {
      * @param elem
      * @returns {string}
      */
-    PHPCodeGenerator.prototype.getDocumentType = function ( elem ) {
-        var _type = this.getType ( elem );
+    PHPCodeGenerator.prototype.getType = function ( elem ) {
+        var _type = this.getDocumentType ( elem );
         if ( elem.multiplicity && _type !== "void" ) {
             if ( _type.indexOf ( "[]" ) !== -1 ) {
                 _type = "array";
@@ -412,7 +412,6 @@ define ( function ( require , exports , module ) {
                 var terms = [];
                 // Doc
                 this.writeDoc ( codeWriter , elem.documentation , options );
-                // Visibility
                 var visibility = this.getVisibility ( elem );
                 if ( visibility ) {
                     terms.push ( visibility );
@@ -435,7 +434,7 @@ define ( function ( require , exports , module ) {
         if ( elem.name.length > 0 ) {
             var terms = [];
             // doc
-            var doc   = "@var " + this.getType ( elem ) + " " + elem.documentation.trim ();
+            var doc   = "@var " + this.getDocumentType ( elem ) + " " + elem.documentation.trim ();
             this.writeDoc ( codeWriter , doc , options );
 
             // modifiers const
@@ -503,10 +502,10 @@ define ( function ( require , exports , module ) {
             // doc
             var doc         = elem.documentation.trim ();
             _.each ( params , function ( param ) {
-                doc += "\n@param " + _that.getType ( param ) + " $" + param.name + " " + param.documentation;
+                doc += "\n@param " + _that.getDocumentType ( param ) + " $" + param.name + " " + param.documentation;
             } );
             if ( returnParam ) {
-                doc += "\n@return " + this.getType ( returnParam ) + " " + returnParam.documentation;
+                doc += "\n@return " + this.getDocumentType ( returnParam ) + " " + returnParam.documentation;
             }
             this.writeDoc ( codeWriter , doc , options );
 
@@ -526,7 +525,7 @@ define ( function ( require , exports , module ) {
                     var p             = params[ i ];
                     var s             = "$" + p.name;
                     var defaultValue  = p.defaultValue;
-                    var type          = this.getDocumentType ( p );
+                    var type          = this.getType ( p );
                     var typeHint      = type;
                     var tempNamespace = type;
                     if ( options.phpStrictMode && this.isAllowedTypeHint ( type ) ) {
@@ -549,7 +548,7 @@ define ( function ( require , exports , module ) {
 
             var functionName = elem.name + "(" + paramTerms.join ( ", " ) + ")";
             if ( options.phpReturnType ) {
-                functionName = functionName + ':' + this.getDocumentType ( returnParam );
+                functionName = functionName + ':' + this.getType ( returnParam );
             }
             terms.push ( functionName );
 
@@ -569,7 +568,7 @@ define ( function ( require , exports , module ) {
 
                     // return statement
                     if ( returnParam ) {
-                        var returnType = this.getDocumentType ( returnParam );
+                        var returnType = this.getType ( returnParam );
                         if ( returnType === "boolean" || returnType === "bool" ) {
                             codeWriter.writeLine ( "return false;" );
                         } else if ( returnType === "int" || returnType === "long" || returnType === "short" || returnType === "byte" ) {
