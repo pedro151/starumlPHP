@@ -125,7 +125,7 @@ define(function (require, exports, module) {
                 codeWriter.writeLine("<?php\n");
                 this.writePackageDeclaration(codeWriter, elem, options);
                 codeWriter.writeLine();
-                codeWriter.addSection("uses");
+                codeWriter.addSection("uses", true);
                 this.writeClass(codeWriter, elem, options);
                 file = FileSystem.getFileForPath(fullPath);
                 FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
@@ -138,7 +138,7 @@ define(function (require, exports, module) {
             codeWriter.writeLine("<?php\n");
             this.writePackageDeclaration(codeWriter, elem, options);
             codeWriter.writeLine();
-            codeWriter.addSection("uses");
+            codeWriter.addSection("uses", true);
             this.writeInterface(codeWriter, elem, options);
             file = FileSystem.getFileForPath(fullPath);
             FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
@@ -509,12 +509,14 @@ define(function (require, exports, module) {
                     var defaultValue = p.defaultValue;
                     var type = this.getType(p, 1);
                     var typeHint = type;
+                    var tempNamespace = type;
                     if (options.phpStrictMode && this.isAllowedTypeHint(type)) {
                         if (type.split("\\").length - 1 > 1) {
-                            if(SEPARATE_NAMESPACE+this.namespace != type){
+                             typeHint = typeHint.replace(/^.*\\+/, "");
+                             tempNamespace = tempNamespace.replace(SEPARATE_NAMESPACE+typeHint,"");
+                            if(SEPARATE_NAMESPACE+this.namespace != tempNamespace){
                             	codeWriter.writeLineInSection("use " + type.replace(/^\\+/, "") + ";", "uses");
                             }
-                            typeHint = typeHint.replace(/^.*\\+/, "");
                         }
                         s = typeHint + " " + s;
                     }
@@ -794,13 +796,13 @@ define(function (require, exports, module) {
             literals.push(elem.literals[i].name);
             literals.push("=");
             literals.push(i);
-            literals.push(";");
+            literlas.push(";");
         }
 
         codeWriter.writeLine(literals.join(" ") + "\n");
 
         codeWriter.outdent();
-        //codeWriter.lines.pop();
+        codeWriter.lines.pop();
         codeWriter.writeLine("}\n");
     };
 
