@@ -756,17 +756,8 @@ define ( function ( require , exports , module ) {
         // Inner Definitions
         for ( i = 0, len = elem.ownedElements.length; i < len; i++ ) {
             var def = elem.ownedElements[ i ];
-            if ( def instanceof type.UMLClass ) {
-                if ( def.stereotype === "annotationType" ) {
-                    this.writeAnnotationType ( codeWriter , def , options );
-                } else {
-                    this.writeClass ( codeWriter , def , options );
-                }
-                codeWriter.writeLine ();
-            } else if ( def instanceof type.UMLEnumeration ) {
-                this.writeEnum ( codeWriter , def , options );
-                codeWriter.writeLine ();
-            }
+            this.writeClasses ( codeWriter , def , options );
+            codeWriter.writeLine ();
         }
 
         codeWriter.outdent ();
@@ -857,20 +848,8 @@ define ( function ( require , exports , module ) {
         // Inner Definitions
         for ( i = 0, len = elem.ownedElements.length; i < len; i++ ) {
             var def = elem.ownedElements[ i ];
-            if ( def instanceof type.UMLClass ) {
-                if ( def.stereotype === "annotationType" ) {
-                    this.writeAnnotationType ( codeWriter , def , options );
-                } else {
-                    this.writeClass ( codeWriter , def , options );
-                }
-                codeWriter.writeLine ();
-            } else if ( def instanceof type.UMLInterface ) {
-                this.writeInterface ( codeWriter , def , options );
-                codeWriter.writeLine ();
-            } else if ( def instanceof type.UMLEnumeration ) {
-                this.writeEnum ( codeWriter , def , options );
-                codeWriter.writeLine ();
-            }
+            this.writeClasses ( codeWriter , def , options );
+            codeWriter.writeLine ();
         }
 
         codeWriter.outdent ();
