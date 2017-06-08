@@ -322,6 +322,21 @@ define ( function ( require , exports , module ) {
     };
 
     /**
+     *
+     * @param elem
+     * @returns {string}
+     */
+    PHPCodeGenerator.prototype.getDocumentType = function ( elem ) {
+        var _type = this.getType ( elem );
+        if ( elem.multiplicity && _type !== "void" ) {
+            if ( _type.indexOf ( "[]" ) !== -1 ) {
+                _type = "array";
+            }
+        }
+        return _type;
+    };
+
+    /**
      * Write Doc
      * @param {StringWriter} codeWriter
      * @param {string} text
@@ -511,7 +526,7 @@ define ( function ( require , exports , module ) {
                     var p             = params[ i ];
                     var s             = "$" + p.name;
                     var defaultValue  = p.defaultValue;
-                    var type          = this.getType ( p , 1 );
+                    var type          = this.getDocumentType ( p );
                     var typeHint      = type;
                     var tempNamespace = type;
                     if ( options.phpStrictMode && this.isAllowedTypeHint ( type ) ) {
@@ -534,7 +549,7 @@ define ( function ( require , exports , module ) {
 
             var functionName = elem.name + "(" + paramTerms.join ( ", " ) + ")";
             if ( options.phpReturnType ) {
-                functionName = functionName + ':' + this.getType ( returnParam , 1 );
+                functionName = functionName + ':' + this.getDocumentType ( returnParam );
             }
             terms.push ( functionName );
 
@@ -554,7 +569,7 @@ define ( function ( require , exports , module ) {
 
                     // return statement
                     if ( returnParam ) {
-                        var returnType = this.getType ( returnParam , 1 );
+                        var returnType = this.getDocumentType ( returnParam );
                         if ( returnType === "boolean" || returnType === "bool" ) {
                             codeWriter.writeLine ( "return false;" );
                         } else if ( returnType === "int" || returnType === "long" || returnType === "short" || returnType === "byte" ) {
