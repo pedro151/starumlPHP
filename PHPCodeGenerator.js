@@ -341,19 +341,50 @@ define ( function ( require , exports , module ) {
         return _type;
     };
 
-    PHPCodeGenerator.prototype.getTypeHint = function ( elem , codeWriter ) {
-        var type          = this.getType ( elem );
-        var typeHint      = type ,
-            tempNamespace = type;
-        if ( type.split ( "\\" ).length - 1 > 1 ) {
-            typeHint      = typeHint.replace ( /^.*\\+/ , "" );
-            tempNamespace = tempNamespace.replace ( SEPARATE_NAMESPACE + typeHint , "" );
-            if ( SEPARATE_NAMESPACE + this.namespace != tempNamespace ) {
-                codeWriter.writeLineInSection ( "use " + type.replace ( /^\\+/ , "" ) + ";" , "uses" );
+    PHPCodeGenerator.prototype.getTypeHint = function ( elem ) {
+        var _type      = "void",
+            _namespacePath = [],
+            _namespace = "",
+            _isObject = false,
+            _haveSameClass=false;
+
+        if ( elem === null ) {
+            return _type;
+        }
+
+        // type name
+        if ( elem instanceof type.UMLAssociationEnd ) {
+            if ( elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0 ) {
+                _isObject = true;
+                _type      = elem.reference.name;
+                _namespacePath = this.getNamespaces ( elem.reference );
+            }
+        } else {
+            if ( elem.type instanceof type.UMLModelElement && elem.type.name.length > 0 ) {
+                _isObject = true;
+                _type      = elem.type.name;
+                _namespacePath = this.getNamespaces ( elem.type );
+            } else if ( _.isString ( elem.type ) && elem.type.length > 0 ) {
+                _type = elem.type;
             }
         }
 
-        return typeHint;
+        if(_isObject){
+            for ( var i = 0; i < _namespacePath.length; i++ ) {
+                if ( this.namespacePath[ i ] == _namespacePath[i] ) {
+                    _haveSameClass = true;
+                    _namespacePath = _.without(_namespacePath, _namespacePath[i]);
+                    break;
+                }
+            }
+            _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+            if ( _namespace !== "" && !_haveSameClass) {
+                    _namespace = SEPARATE_NAMESPACE + _namespace;
+            }
+            _type = _namespace + SEPARATE_NAMESPACE + _type;
+        }
+
+        return _type;
     };
 
     /**
@@ -393,7 +424,7 @@ define ( function ( require , exports , module ) {
         }
     };
 
-    var namespace = null;
+    var namespacePath = null;
 
     /**
      * Write Package Declaration
@@ -401,14 +432,13 @@ define ( function ( require , exports , module ) {
      * @param {type.Model} elem
      */
     PHPCodeGenerator.prototype.writePackageDeclaration = function ( codeWriter , elem ) {
-        var pathItems;
-        this.namespace = null;
-        pathItems      = this.getNamespaces ( elem );
-        if ( pathItems.length > 0 ) {
-            this.namespace = pathItems.join ( SEPARATE_NAMESPACE );
+        var namespace      = null;
+        this.namespacePath = this.getNamespaces ( elem );
+        if ( this.namespacePath.length > 0 ) {
+            namespace = this.namespacePath.join ( SEPARATE_NAMESPACE );
         }
-        if ( this.namespace ) {
-            codeWriter.writeLine ( "namespace " + this.namespace + ";" );
+        if ( namespace ) {
+            codeWriter.writeLine ( "namespace " + namespace + ";" );
         }
     };
 
@@ -547,7 +577,7 @@ define ( function ( require , exports , module ) {
                     var defaultValue = p.defaultValue;
                     var type         = this.getType ( p );
                     if ( options.phpStrictMode && this.isAllowedTypeHint ( type ) ) {
-                        s = this.getTypeHint ( p , codeWriter ) + " " + s;
+                        s = this.getTypeHint ( p ) + " " + s;
                     }
 
                     if ( defaultValue.length > 0 ) {
@@ -559,7 +589,7 @@ define ( function ( require , exports , module ) {
 
             var functionName = elem.name + "(" + paramTerms.join ( ", " ) + ")";
             if ( options.phpReturnType ) {
-                functionName = functionName + ':' + this.getTypeHint ( returnParam , codeWriter );
+                functionName = functionName + ':' + this.getTypeHint ( returnParam );
             }
             terms.push ( functionName );
 
