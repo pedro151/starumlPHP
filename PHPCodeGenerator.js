@@ -83,11 +83,12 @@ define ( function ( require , exports , module ) {
     PHPCodeGenerator.prototype.generate = function ( elem , path , options ) {
         var result = new $.Deferred () ,
             self   = this ,
+            fullPath = path + "/" + elem.name,
             directory;
 
         // Package
         if ( elem instanceof type.UMLPackage ) {
-            directory = FileSystem.getDirectoryForPath ( path + "/" + elem.name );
+            directory = FileSystem.getDirectoryForPath ( fullPath );
             directory.create ( function ( err , stat ) {
                 if ( !err ) {
                     Async.doSequentially (
@@ -155,13 +156,14 @@ define ( function ( require , exports , module ) {
      * @param options
      */
     PHPCodeGenerator.prototype.writeClasses = function ( codeWriter , elem , options ) {
-        // Class
-        if ( elem instanceof type.UMLClass && !elem.stereotype === "annotationType" ) {
-            this.writeClass ( codeWriter , elem , options );
 
-            // AnnotationType
-        } else if ( elem instanceof type.UMLClass && elem.stereotype === "annotationType" ) {
+        // AnnotationType
+        if ( elem instanceof type.UMLClass && elem.stereotype === "annotationType" ) {
             this.writeAnnotationType ( codeWriter , elem , options );
+
+            // Class
+        } else if ( elem instanceof type.UMLClass ) {
+            this.writeClass ( codeWriter , elem , options );
 
             // Interface
         } else if ( elem instanceof type.UMLInterface ) {
@@ -280,7 +282,7 @@ define ( function ( require , exports , module ) {
      * @param {type.Model} elem
      * @return {string}
      */
-    PHPCodeGenerator.prototype.getDocumentType = function ( elem ) {
+    PHPCodeGenerator.prototype.getDocumenttype = function ( elem ) {
         var _type      = "void";
         var _namespace = "";
 
@@ -327,7 +329,7 @@ define ( function ( require , exports , module ) {
      * @returns {string}
      */
     PHPCodeGenerator.prototype.getType = function ( elem ) {
-        var _type = this.getDocumentType ( elem );
+        var _type = this.getDocumenttype ( elem );
         if ( elem.multiplicity && _type !== "void" ) {
             if ( _type.indexOf ( "[]" ) !== -1 ) {
                 _type = "array";
@@ -434,7 +436,7 @@ define ( function ( require , exports , module ) {
         if ( elem.name.length > 0 ) {
             var terms = [];
             // doc
-            var doc   = "@var " + this.getDocumentType ( elem ) + " " + elem.documentation.trim ();
+            var doc   = "@var " + this.getDocumenttype ( elem ) + " " + elem.documentation.trim ();
             this.writeDoc ( codeWriter , doc , options );
 
             // modifiers const
@@ -502,10 +504,10 @@ define ( function ( require , exports , module ) {
             // doc
             var doc         = elem.documentation.trim ();
             _.each ( params , function ( param ) {
-                doc += "\n@param " + _that.getDocumentType ( param ) + " $" + param.name + " " + param.documentation;
+                doc += "\n@param " + _that.getDocumenttype ( param ) + " $" + param.name + " " + param.documentation;
             } );
             if ( returnParam ) {
-                doc += "\n@return " + this.getDocumentType ( returnParam ) + " " + returnParam.documentation;
+                doc += "\n@return " + this.getDocumenttype ( returnParam ) + " " + returnParam.documentation;
             }
             this.writeDoc ( codeWriter , doc , options );
 
@@ -690,7 +692,9 @@ define ( function ( require , exports , module ) {
         // Inner Definitions
         for ( i = 0, len = elem.ownedElements.length; i < len; i++ ) {
             var def = elem.ownedElements[ i ];
-            this.writeClasses ( codeWriter , def , options );
+            if ( this.isClass ( def , type ) ) {
+                this.writeClasses ( codeWriter , def , options );
+            }
             codeWriter.writeLine ();
         }
 
