@@ -371,21 +371,34 @@ define ( function ( require , exports , module ) {
         }
 
         if ( _isObject ) {
-            if(count(array_intersect(_globalNamespace, _namespacePath)) == count(_globalNamespace)){
+            if ( _globalNamespace.intersect ( _namespacePath ) == _globalNamespace ) {
                 _.every ( _namespacePath , function ( path , i ) {
                     _haveSameClass = true;
                     _namespacePath.splice ( i , 1 );
                     return _globalNamespace[ i ] != path;
                 } );
-                _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
-                if ( _namespace !== "" && !_haveSameClass ) {
-                    _namespace = SEPARATE_NAMESPACE + _namespace;
-                }
             }
+
+            _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+
+            if ( _namespace !== "" && !_haveSameClass ) {
+                _namespace = SEPARATE_NAMESPACE + _namespace;
+            }
+
             _type = _namespace + SEPARATE_NAMESPACE + _type;
         }
 
         return _type;
+    };
+
+    Array.prototype.intersect = function ( array ) {
+        var result = [];
+        for ( var i = 0 , len = this.length; i < len; i++ ) {
+            if ( this[ i ] == array[ i ] ) {
+                result.push ( array[ i ] );
+            }
+        }
+        return result;
     };
 
     /**
