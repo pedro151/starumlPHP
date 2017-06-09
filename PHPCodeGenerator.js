@@ -371,17 +371,20 @@ define ( function ( require , exports , module ) {
         }
 
         if ( _isObject ) {
-            if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
-                _namespaceTemp = _.map ( _globalNamespace , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
-            }
-
             _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
 
-            if ( _namespace !== "" && _namespaceTemp !== "" ) {
-                _namespace = SEPARATE_NAMESPACE + _namespace.replace(_namespaceTemp, "");
+            if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
+                _namespaceTemp = _.map ( _globalNamespace , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+                _namespace     = _namespace.replace ( _namespaceTemp , "" );
             }
 
-            _type = _namespace + SEPARATE_NAMESPACE + _type;
+            if ( _namespace !== "" ) {
+                _type = _namespace + SEPARATE_NAMESPACE + _type;
+            }
+
+            if ( _namespaceTemp == "" ) {
+                _type = SEPARATE_NAMESPACE + _type;
+            }
         }
 
         return _type;
