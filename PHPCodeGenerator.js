@@ -373,7 +373,7 @@ define ( function ( require , exports , module ) {
             for ( var i = 0; i < _namespacePath.length; i++ ) {
                 if ( this.namespacePath[ i ] == _namespacePath[i] ) {
                     _haveSameClass = true;
-                    _namespacePath = _.without(_namespacePath, _namespacePath[i]);
+                    _namespacePath.splice(i, 1);
                 }else{
                     break;
                 }
