@@ -378,11 +378,11 @@ define ( function ( require , exports , module ) {
                 _namespace     = _namespace.replace ( _namespaceTemp , "" );
             }
 
-            if ( _namespace !== "" ) {
+            if ( _namespace.length > 0 ) {
                 _type = _namespace + SEPARATE_NAMESPACE + _type;
             }
 
-            if ( _namespaceTemp == "" ) {
+            if ( _namespaceTemp.length === 0 ) {
                 _type = SEPARATE_NAMESPACE + _type;
             }
         }
