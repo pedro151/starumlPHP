@@ -352,6 +352,8 @@ define ( function ( require , exports , module ) {
                 codeWriter.writeLineInSection ( "use " + type.replace ( /^\\+/ , "" ) + ";" , "uses" );
             }
         }
+
+        return typeHint;
     };
 
     /**
