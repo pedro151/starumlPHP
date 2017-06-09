@@ -315,7 +315,7 @@ define ( function ( require , exports , module ) {
             }
         }
         // multiplicity
-        if ( elem.multiplicity && _type !== "void" ) {
+        if ( elem.multiplicity && this.isAllowedTypeHint ( _type ) ) {
             if ( _.contains ( [ "0..*" , "1..*" , "*" ] , elem.multiplicity.trim () ) ) {
                 _type += "[]";
             }
@@ -333,7 +333,7 @@ define ( function ( require , exports , module ) {
             return "void";
         }
         var _type = this.getDocumenttype ( elem );
-        if ( elem.multiplicity && _type !== "void" ) {
+        if ( elem.multiplicity &&  this.isAllowedTypeHint ( _type ) ) {
             if ( _type.indexOf ( "[]" ) !== -1 ) {
                 _type = "array";
             }
@@ -870,14 +870,6 @@ define ( function ( require , exports , module ) {
      */
     PHPCodeGenerator.prototype.isAllowedTypeHint = function ( type ) {
         switch ( type ) {
-            case "bool":
-            case "boolean":
-            case "int":
-            case "integer":
-            case "float":
-            case "double":
-            case "string":
-            case "resource":
             case "void":
                 return false;
             default:
