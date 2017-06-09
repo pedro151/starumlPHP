@@ -346,7 +346,6 @@ define ( function ( require , exports , module ) {
             _namespacePath   = [] ,
             _globalNamespace = this.namespacePath ,
             _namespace       = "" ,
-            _temp            = [] ,
             _isObject        = false;
 
         if ( elem === null ) {
@@ -480,7 +479,7 @@ define ( function ( require , exports , module ) {
     PHPCodeGenerator.prototype.writeConstructor = function ( codeWriter , elem , options ) {
         var haveConstruct = false;
         for ( var i = 0 , len = elem.operations.length; i < len; i++ ) {
-            if ( elem.operations[ i ].name === "__construct" ) {
+            if ( elem.operations[ i ].name.indexOf("__construct") !== -1) {
                 haveConstruct = true;
             }
         }
