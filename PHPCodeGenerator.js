@@ -81,9 +81,9 @@ define ( function ( require , exports , module ) {
      * @return {$.Promise}
      */
     PHPCodeGenerator.prototype.generate = function ( elem , path , options ) {
-        var result = new $.Deferred () ,
-            self   = this ,
-            fullPath = path + "/" + elem.name,
+        var result   = new $.Deferred () ,
+            self     = this ,
+            fullPath = path + "/" + elem.name ,
             directory;
 
         // Package
@@ -329,8 +329,11 @@ define ( function ( require , exports , module ) {
      * @returns {string}
      */
     PHPCodeGenerator.prototype.getType = function ( elem ) {
+        if ( elem === null ) {
+            return "void";
+        }
         var _type = this.getDocumenttype ( elem );
-        if ( elem.hasOwnProperty('multiplicity') ) {
+        if ( elem.multiplicity && _type !== "void" ) {
             if ( _type.indexOf ( "[]" ) !== -1 ) {
                 _type = "array";
             }
