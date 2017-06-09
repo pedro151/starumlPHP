@@ -342,11 +342,12 @@ define ( function ( require , exports , module ) {
     };
 
     PHPCodeGenerator.prototype.getTypeHint = function ( elem ) {
-        var _type          = "void" ,
-            _namespacePath = [] ,
-            _namespace     = "" ,
-            _isObject      = false ,
-            _haveSameClass = false;
+        var _type            = "void" ,
+            _namespacePath   = [] ,
+            _globalNamespace = this.namespacePath ,
+            _namespace       = "" ,
+            _isObject        = false ,
+            _haveSameClass   = false;
 
         if ( elem === null ) {
             return _type;
@@ -373,7 +374,7 @@ define ( function ( require , exports , module ) {
             _.every ( _namespacePath , function ( path , i ) {
                 _haveSameClass = true;
                 _namespacePath.splice ( i , 1 );
-                return this.namespacePath[ i ] != path;
+                return _globalNamespace[ i ] != path;
             } );
             _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
             if ( _namespace !== "" && !_haveSameClass ) {
