@@ -371,7 +371,7 @@ define ( function ( require , exports , module ) {
         }
 
         if ( _isObject ) {
-            if ( _globalNamespace.intersect ( _namespacePath ) == _globalNamespace ) {
+            if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
                 _.every ( _namespacePath , function ( path , i ) {
                     _haveSameClass = true;
                     _namespacePath.splice ( i , 1 );
@@ -399,6 +399,18 @@ define ( function ( require , exports , module ) {
             }
         }
         return result;
+    };
+
+    Array.prototype.isEqual = function ( array ) {
+        if ( this.length != array.length ) {
+            return false;
+        }
+        for ( var i = 0 , len = this.length; i < len; i++ ) {
+            if ( this[ i ] != array[ i ] ) {
+                return false;
+            }
+        }
+        return true;
     };
 
     /**
