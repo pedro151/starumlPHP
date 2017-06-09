@@ -370,9 +370,11 @@ define ( function ( require , exports , module ) {
         }
 
         if ( _isObject ) {
-            _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
             if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
                 _namespace = _.map ( _namespacePath.diff ( _globalNamespace ) , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+            } else {
+                _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+                _namespace = SEPARATE_NAMESPACE + _namespace;
             }
 
             if ( _namespace.length > 0 ) {
@@ -479,7 +481,7 @@ define ( function ( require , exports , module ) {
     PHPCodeGenerator.prototype.writeConstructor = function ( codeWriter , elem , options ) {
         var haveConstruct = false;
         for ( var i = 0 , len = elem.operations.length; i < len; i++ ) {
-            if ( elem.operations[ i ].name.indexOf("__construct") !== -1) {
+            if ( elem.operations[ i ].name.indexOf ( "__construct" ) !== -1 ) {
                 haveConstruct = true;
             }
         }
