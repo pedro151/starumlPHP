@@ -372,18 +372,12 @@ define ( function ( require , exports , module ) {
 
         if ( _isObject ) {
             _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
-
             if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
-                _namespaceTemp = _.map ( _globalNamespace , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
-                _namespace     = _namespace.replace ( _namespaceTemp , "" );
+                _namespace = _.map ( _namespacePath.diff ( _globalNamespace ) , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
             }
 
             if ( _namespace.length > 0 ) {
                 _type = _namespace + SEPARATE_NAMESPACE + _type;
-            }
-
-            if ( _namespaceTemp.length === 0 ) {
-                _type = SEPARATE_NAMESPACE + _type;
             }
         }
 
@@ -410,6 +404,16 @@ define ( function ( require , exports , module ) {
             }
         }
         return true;
+    };
+
+    Array.prototype.diff = function ( array ) {
+        var result = [];
+        for ( var i = 0 , len = this.length; i < len; i++ ) {
+            if ( this[ i ] != array[ i ] ) {
+                result.push ( array[ i ] );
+            }
+        }
+        return result;
     };
 
     /**
