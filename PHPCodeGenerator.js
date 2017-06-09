@@ -282,7 +282,7 @@ define ( function ( require , exports , module ) {
      * @param {type.Model} elem
      * @return {string}
      */
-    PHPCodeGenerator.prototype.getDocumenttype = function ( elem ) {
+    PHPCodeGenerator.prototype.getDocumentType = function ( elem ) {
         var _type      = "void";
         var _namespace = "";
 
@@ -332,13 +332,26 @@ define ( function ( require , exports , module ) {
         if ( elem === null ) {
             return "void";
         }
-        var _type = this.getDocumenttype ( elem );
-        if ( elem.multiplicity &&  this.isAllowedTypeHint ( _type ) ) {
+        var _type = this.getDocumentType ( elem );
+        if ( elem.multiplicity && this.isAllowedTypeHint ( _type ) ) {
             if ( _type.indexOf ( "[]" ) !== -1 ) {
                 _type = "array";
             }
         }
         return _type;
+    };
+
+    PHPCodeGenerator.prototype.getTypeHint = function ( elem , codeWriter ) {
+        var type          = this.getType ( elem );
+        var typeHint      = type ,
+            tempNamespace = type;
+        if ( type.split ( "\\" ).length - 1 > 1 ) {
+            typeHint      = typeHint.replace ( /^.*\\+/ , "" );
+            tempNamespace = tempNamespace.replace ( SEPARATE_NAMESPACE + typeHint , "" );
+            if ( SEPARATE_NAMESPACE + this.namespace != tempNamespace ) {
+                codeWriter.writeLineInSection ( "use " + type.replace ( /^\\+/ , "" ) + ";" , "uses" );
+            }
+        }
     };
 
     /**
@@ -439,7 +452,7 @@ define ( function ( require , exports , module ) {
         if ( elem.name.length > 0 ) {
             var terms = [];
             // doc
-            var doc   = "@var " + this.getDocumenttype ( elem ) + " " + elem.documentation.trim ();
+            var doc   = "@var " + this.getDocumentType ( elem ) + " " + elem.documentation.trim ();
             this.writeDoc ( codeWriter , doc , options );
 
             // modifiers const
@@ -507,10 +520,10 @@ define ( function ( require , exports , module ) {
             // doc
             var doc         = elem.documentation.trim ();
             _.each ( params , function ( param ) {
-                doc += "\n@param " + _that.getDocumenttype ( param ) + " $" + param.name + " " + param.documentation;
+                doc += "\n@param " + _that.getDocumentType ( param ) + " $" + param.name + " " + param.documentation;
             } );
             if ( returnParam ) {
-                doc += "\n@return " + this.getDocumenttype ( returnParam ) + " " + returnParam.documentation;
+                doc += "\n@return " + this.getDocumentType ( returnParam ) + " " + returnParam.documentation;
             }
             this.writeDoc ( codeWriter , doc , options );
 
@@ -527,21 +540,12 @@ define ( function ( require , exports , module ) {
             if ( !skipParams ) {
                 var i , len;
                 for ( i = 0, len = params.length; i < len; i++ ) {
-                    var p             = params[ i ];
-                    var s             = "$" + p.name;
-                    var defaultValue  = p.defaultValue;
-                    var type          = this.getType ( p );
-                    var typeHint      = type;
-                    var tempNamespace = type;
+                    var p            = params[ i ];
+                    var s            = "$" + p.name;
+                    var defaultValue = p.defaultValue;
+                    var type         = this.getType ( p );
                     if ( options.phpStrictMode && this.isAllowedTypeHint ( type ) ) {
-                        if ( type.split ( "\\" ).length - 1 > 1 ) {
-                            typeHint      = typeHint.replace ( /^.*\\+/ , "" );
-                            tempNamespace = tempNamespace.replace ( SEPARATE_NAMESPACE + typeHint , "" );
-                            if ( SEPARATE_NAMESPACE + this.namespace != tempNamespace ) {
-                                codeWriter.writeLineInSection ( "use " + type.replace ( /^\\+/ , "" ) + ";" , "uses" );
-                            }
-                        }
-                        s = typeHint + " " + s;
+                        s = this.getTypeHint ( p , codeWriter ) + " " + s;
                     }
 
                     if ( defaultValue.length > 0 ) {
@@ -553,7 +557,7 @@ define ( function ( require , exports , module ) {
 
             var functionName = elem.name + "(" + paramTerms.join ( ", " ) + ")";
             if ( options.phpReturnType ) {
-                functionName = functionName + ':' + this.getType ( returnParam );
+                functionName = functionName + ':' + this.getTypeHint ( returnParam , codeWriter );
             }
             terms.push ( functionName );
 
