@@ -373,8 +373,12 @@ define ( function ( require , exports , module ) {
         if ( _isObject ) {
             _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
             if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
-                var temp   = _namespacePath.diff ( _globalNamespace );
-                _namespace = _.map ( temp , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+                var temp = _namespacePath.diff ( _globalNamespace );
+                if ( temp.length > 1 ) {
+                    _namespace = _.map ( temp , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+                } else if ( temp.length == 1 ) {
+                    _namespace = temp[ 0 ];
+                }
             }
 
             if ( _namespace.length > 0 ) {
