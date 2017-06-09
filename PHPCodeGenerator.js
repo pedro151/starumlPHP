@@ -330,7 +330,7 @@ define ( function ( require , exports , module ) {
      */
     PHPCodeGenerator.prototype.getType = function ( elem ) {
         var _type = this.getDocumenttype ( elem );
-        if ( elem.multiplicity && _type !== "void" ) {
+        if ( elem.hasOwnProperty('multiplicity') ) {
             if ( _type.indexOf ( "[]" ) !== -1 ) {
                 _type = "array";
             }
