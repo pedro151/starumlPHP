@@ -346,8 +346,8 @@ define ( function ( require , exports , module ) {
             _namespacePath   = [] ,
             _globalNamespace = this.namespacePath ,
             _namespace       = "" ,
-            _isObject        = false ,
-            _haveSameClass   = false;
+            _namespaceTemp   = "" ,
+            _isObject        = false;
 
         if ( elem === null ) {
             return _type;
@@ -372,17 +372,13 @@ define ( function ( require , exports , module ) {
 
         if ( _isObject ) {
             if ( _globalNamespace.isEqual ( _globalNamespace.intersect ( _namespacePath ) ) ) {
-                _.every ( _namespacePath , function ( path , i ) {
-                    _haveSameClass = true;
-                    _namespacePath.splice ( i , 1 );
-                    return _globalNamespace[ i ] != path;
-                } );
+                _namespaceTemp = _.map ( _globalNamespace , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
             }
 
             _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
 
-            if ( _namespace !== "" && !_haveSameClass ) {
-                _namespace = SEPARATE_NAMESPACE + _namespace;
+            if ( _namespace !== "" && _namespaceTemp !== "" ) {
+                _namespace = SEPARATE_NAMESPACE + _namespace.replace(_namespaceTemp, "");
             }
 
             _type = _namespace + SEPARATE_NAMESPACE + _type;
