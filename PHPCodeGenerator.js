@@ -371,14 +371,16 @@ define ( function ( require , exports , module ) {
         }
 
         if ( _isObject ) {
-            _.every ( _namespacePath , function ( path , i ) {
-                _haveSameClass = true;
-                _namespacePath.splice ( i , 1 );
-                return _globalNamespace[ i ] != path;
-            } );
-            _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
-            if ( _namespace !== "" && !_haveSameClass ) {
-                _namespace = SEPARATE_NAMESPACE + _namespace;
+            if(count(array_intersect(_globalNamespace, _namespacePath)) == count(_globalNamespace)){
+                _.every ( _namespacePath , function ( path , i ) {
+                    _haveSameClass = true;
+                    _namespacePath.splice ( i , 1 );
+                    return _globalNamespace[ i ] != path;
+                } );
+                _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
+                if ( _namespace !== "" && !_haveSameClass ) {
+                    _namespace = SEPARATE_NAMESPACE + _namespace;
+                }
             }
             _type = _namespace + SEPARATE_NAMESPACE + _type;
         }
