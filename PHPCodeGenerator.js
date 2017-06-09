@@ -342,11 +342,11 @@ define ( function ( require , exports , module ) {
     };
 
     PHPCodeGenerator.prototype.getTypeHint = function ( elem ) {
-        var _type      = "void",
-            _namespacePath = [],
-            _namespace = "",
-            _isObject = false,
-            _haveSameClass=false;
+        var _type          = "void" ,
+            _namespacePath = [] ,
+            _namespace     = "" ,
+            _isObject      = false ,
+            _haveSameClass = false;
 
         if ( elem === null ) {
             return _type;
@@ -355,32 +355,29 @@ define ( function ( require , exports , module ) {
         // type name
         if ( elem instanceof type.UMLAssociationEnd ) {
             if ( elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0 ) {
-                _isObject = true;
-                _type      = elem.reference.name;
+                _isObject      = true;
+                _type          = elem.reference.name;
                 _namespacePath = this.getNamespaces ( elem.reference );
             }
         } else {
             if ( elem.type instanceof type.UMLModelElement && elem.type.name.length > 0 ) {
-                _isObject = true;
-                _type      = elem.type.name;
+                _isObject      = true;
+                _type          = elem.type.name;
                 _namespacePath = this.getNamespaces ( elem.type );
             } else if ( _.isString ( elem.type ) && elem.type.length > 0 ) {
                 _type = elem.type;
             }
         }
 
-        if(_isObject){
-            for ( var i = 0; i < _namespacePath.length; i++ ) {
-                if ( this.namespacePath[ i ] == _namespacePath[i] ) {
-                    _haveSameClass = true;
-                    _namespacePath.splice(i, 1);
-                }else{
-                    break;
-                }
-            }
+        if ( _isObject ) {
+            _.every ( _namespacePath , function ( path , i ) {
+                _haveSameClass = true;
+                _namespacePath.splice ( i , 1 );
+                return this.namespacePath[ i ] != path;
+            } );
             _namespace = _.map ( _namespacePath , function ( e ) { return e; } ).join ( SEPARATE_NAMESPACE );
-            if ( _namespace !== "" && !_haveSameClass) {
-                    _namespace = SEPARATE_NAMESPACE + _namespace;
+            if ( _namespace !== "" && !_haveSameClass ) {
+                _namespace = SEPARATE_NAMESPACE + _namespace;
             }
             _type = _namespace + SEPARATE_NAMESPACE + _type;
         }
