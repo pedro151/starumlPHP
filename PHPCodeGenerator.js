@@ -865,7 +865,7 @@ define ( function ( require , exports , module ) {
             literals.push ( elem.literals[ i ].name );
             literals.push ( "=" );
             literals.push ( i );
-            literlas.push ( ";" );
+            literals.push ( ";" );
         }
 
         codeWriter.writeLine ( literals.join ( " " ) + "\n" );
