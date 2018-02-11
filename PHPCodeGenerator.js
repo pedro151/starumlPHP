@@ -108,22 +108,7 @@ define ( function ( require , exports , module ) {
                 }
             });
         } else if ( this.isClass ( elem , type ) ) {
-
-            // AnnotationType
-            if (elem.stereotype === "annotationType") {
-                fullPath = path + "/" + elem.name + ".php";
-                codeWriter = new CodeGenUtils.CodeWriter(this.getIndentString(options));
-                codeWriter.writeLine("<?php\n");
-                this.writePackageDeclaration(codeWriter, elem, options);
-                codeWriter.writeLine();
-                this.writeAnnotationType(codeWriter, elem, options);
-                file = FileSystem.getFileForPath(fullPath);
-                FileUtils.writeText(file, codeWriter.getData(), true).then(result.resolve, result.reject);
-
-                // Class
-            } else {
-                this.generateClass ( elem , path , options , result );
-            }
+            this.generateClass ( elem , path , options , result );
         } else {
             result.resolve ();
         }
@@ -153,12 +138,13 @@ define ( function ( require , exports , module ) {
         var codeWriter ,
             file ,
             classExtension = "";
-
+        
         codeWriter = new CodeGenUtils.CodeWriter ( this.getIndentString ( options ) );
         codeWriter.writeLine ( "<?php\n" );
         this.writePackageDeclaration ( codeWriter , elem );
         codeWriter.writeLine ();
         codeWriter.addSection ( "uses" , true );
+        this.writePackageImports(codeWriter, elem, options);
         this.writeClasses ( codeWriter , elem , options );
         if ( elem instanceof type.UMLClass && !elem.stereotype === "annotationType" ) {
             classExtension = options.classExtension;
