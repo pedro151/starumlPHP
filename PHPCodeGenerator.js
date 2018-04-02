@@ -57,7 +57,7 @@ define ( function ( require , exports , module ) {
         this.basePath = basePath;
 
         /** @member {Object} */
-        this.docblockAnnotationsGenerator = new DocblockAnnotationsGenerator.DocblockAnnotationsGenerator(options.phpDoctrineDocblockAnnotations);
+        this.docblockAnnotationsGenerator = new DocblockAnnotationsGenerator.DocblockAnnotationsGenerator( options.phpDoctrineDocblockAnnotations );
     }
 
     /**
@@ -92,7 +92,7 @@ define ( function ( require , exports , module ) {
 
         // Package
         if ( elem instanceof type.UMLPackage ) {
-            fullPath = path + "/" + elem.name + this.docblockAnnotationsGenerator.getSubfolder();
+            fullPath = path + "/" + elem.name + this.docblockAnnotationsGenerator.getSubfolder ();
             directory = FileSystem.getDirectoryForPath ( fullPath );
             directory.create ( function ( err , stat ) {
                 if ( !err ) {
@@ -144,7 +144,7 @@ define ( function ( require , exports , module ) {
         this.writePackageDeclaration ( codeWriter , elem );
         codeWriter.writeLine ();
         codeWriter.addSection ( "uses" , true );
-        this.writePackageImports(codeWriter, elem, options);
+        this.writePackageImports ( codeWriter, elem, options );
         this.writeClasses ( codeWriter , elem , options );
         if ( elem instanceof type.UMLClass && !elem.stereotype === "annotationType" ) {
             classExtension = options.classExtension;
@@ -304,7 +304,7 @@ define ( function ( require , exports , module ) {
                 if ( _namespace !== "" ) {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
                 }
-                _type = _namespace + this.docblockAnnotationsGenerator.getSubfolder('namespace') + SEPARATE_NAMESPACE + _type;
+                _type = _namespace + this.docblockAnnotationsGenerator.getSubfolder ( "namespace" ) + SEPARATE_NAMESPACE + _type;
             }
         } else {
             if ( elem.type instanceof type.UMLModelElement && elem.type.name.length > 0 ) {
@@ -473,7 +473,7 @@ define ( function ( require , exports , module ) {
             namespace = this.namespacePath.join ( SEPARATE_NAMESPACE );
         }
         if (namespace) {
-            namespace += this.docblockAnnotationsGenerator.getSubfolder('namespace');
+            namespace += this.docblockAnnotationsGenerator.getSubfolder ( "namespace" );
 
             codeWriter.writeLine ( "namespace " + namespace + ";" );
         }
@@ -487,13 +487,13 @@ define ( function ( require , exports , module ) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writePackageImports = function (codeWriter, elem, options) {
-        var i, imports = this.docblockAnnotationsGenerator.getImports();
+        var i, imports = this.docblockAnnotationsGenerator.getImports ();
 
         if (imports.length > 0) {
-            codeWriter.writeLine();
+            codeWriter.writeLine ();
 
-            for (i = 0; i < imports.length; i++) {
-                codeWriter.writeLineInSection('use ' + imports[i] + ';', 'uses');
+            for ( i = 0; i < imports.length; i++ ) {
+                codeWriter.writeLineInSection ( "use " + imports[i] + ";", "uses" );
             }
         }
     };
@@ -537,8 +537,8 @@ define ( function ( require , exports , module ) {
      * @param {Object} options
      * @param {type.UMLAssociation} association
      */
-    PHPCodeGenerator.prototype.writeMemberVariable = function (codeWriter, elem, options, association) {
-        if (elem.name.length > 0) {
+    PHPCodeGenerator.prototype.writeMemberVariable = function ( codeWriter, elem, options, association ) {
+        if ( elem.name.length > 0 ) {
             var terms = [];
             // doc
             var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.docblockAnnotationsGenerator.addPropertyAnnotations(elem, this.getType(elem), association);
