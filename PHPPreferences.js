@@ -25,57 +25,17 @@ define(function (require, exports, module) {
     var preferenceId = "php";
 
     var phpPreferences = {
-        "php.syntax": {
-            text: "Syntax",
+        "php.gen": {
+            text: "PHP Code Generation",
             type: "Section"
         },
-        "php.syntax.phpStrictMode": {
-            text: "Strict Mode",
-            description: "Generate PHP Strict Mode.",
-            type: "Check",
-            default: true
-        },
-        "php.syntax.phpReturnType": {
-            text: "Return Type",
-            description: "Generate PHP Return Type (e.q. PHP7).",
-            type: "Check",
-            default: true
-        },
-        "php.syntax.useTab": {
-            text: "Use Tab",
-            description: "Use Tab for indentation instead of spaces.",
-            type: "Check",
-            default: false
-        },
-        "php.syntax.indentSpaces": {
-            text: "Indent Spaces",
-            description: "Number of spaces for indentation.",
-            type: "Number",
-            default: 4
-        },
-        "php.syntax.classExtension": {
-            text: "Append to class filename",
-            description: "Insert value into class filename extensions (e.g. MyClass.class.php)",
-            type: "String",
-            default: ""
-        },
-        "php.syntax.interfaceExtension": {
-            text: "Append to interface filename",
-            description: "Insert value into interface filename extensions (e.g. MyInterface.interface.php)",
-            type: "String",
-            default: ""
-        },
-        "php.doc": {
-            text: "Documentation",
-            type: "Section"
-        },
-        "php.doc.phpDoc": {
+        "php.gen.phpDoc": {
             text: "PHPDoc",
             description: "Generate PHPDoc comments.",
             type: "Check",
             default: true
         },
-        "php.doc.phpDoctrineDocblockAnnotations": {
+        "php.gen.phpDoc.phpDoctrineDocblockAnnotations": {
             text: "Doctrine ORM Docblock annotations",
             description: "Generate Doctrine 2 ORM Docblock annotations.\nNote: set the property types with the one defined by Doctrine.",
             type: "Dropdown",
@@ -86,6 +46,42 @@ define(function (require, exports, module) {
                 {value: 'sfBundle', text: "Symfony (DoctrineBundle)"},
             ]
         },
+        "php.gen.phpStrictMode": {
+            text: "Strict Mode",
+            description: "Generate PHP Strict Mode.",
+            type: "Check",
+            default: true
+        },
+        "php.gen.phpReturnType": {
+            text: "Return Type",
+            description: "Generate PHP Return Type (e.q. PHP7).",
+            type: "Check",
+            default: true
+        },
+        "php.gen.useTab": {
+            text: "Use Tab",
+            description: "Use Tab for indentation instead of spaces.",
+            type: "Check",
+            default: false
+        },
+        "php.gen.indentSpaces": {
+            text: "Indent Spaces",
+            description: "Number of spaces for indentation.",
+            type: "Number",
+            default: 4
+        },
+        "php.gen.classExtension": {
+            text: "Append to class filename",
+            description: "Insert value into class filename extensions (e.g. MyClass.class.php)",
+            type: "String",
+            default: ""
+        },
+        "php.gen.interfaceExtension": {
+            text: "Append to interface filename",
+            description: "Insert value into interface filename extensions (e.g. MyInterface.interface.php)",
+            type: "String",
+            default: ""
+        }
     };
 
     function getId() {
@@ -94,15 +90,14 @@ define(function (require, exports, module) {
 
     function getGenOptions() {
         return {
-            phpStrictMode : PreferenceManager.get("php.syntax.phpStrictMode"),
-            phpReturnType : PreferenceManager.get("php.syntax.phpReturnType"),
-            useTab        : PreferenceManager.get("php.syntax.useTab"),
-            indentSpaces  : PreferenceManager.get("php.syntax.indentSpaces"),
-            classExtension : PreferenceManager.get("php.syntax.classExtension"),
-            interfaceExtension : PreferenceManager.get("php.syntax.interfaceExtension"),
-
-            phpDoc       : PreferenceManager.get("php.doc.phpDoc"),
-            phpDoctrineDocblockAnnotations : PreferenceManager.get("php.doc.phpDoctrineDocblockAnnotations")
+            phpDoc       : PreferenceManager.get("php.gen.phpDoc"),
+            phpDoctrineDocblockAnnotations : PreferenceManager.get("php.gen.phpDoc.phpDoctrineDocblockAnnotations"),
+            useTab        : PreferenceManager.get("php.gen.useTab"),
+            indentSpaces  : PreferenceManager.get("php.gen.indentSpaces"),
+            classExtension : PreferenceManager.get("php.gen.classExtension"),
+            interfaceExtension : PreferenceManager.get("php.gen.interfaceExtension"),
+            phpStrictMode : PreferenceManager.get("php.gen.phpStrictMode"),
+            phpReturnType : PreferenceManager.get("php.gen.phpReturnType")
         };
     }
 
