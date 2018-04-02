@@ -34,8 +34,8 @@ define ( function ( require , exports , module ) {
         Async          = app.getModule ( "utils/Async" ) ,
         UML            = app.getModule ( "uml/UML" );
 
-    var CodeGenUtils = require("CodeGenUtils");
-    var DocblockAnnotationsGenerator = require("Doctrine/DocblockAnnotationsGenerator");
+    var CodeGenUtils = require ( "CodeGenUtils" );
+    var DocblockAnnotationsGenerator = require ( "Doctrine/DocblockAnnotationsGenerator" );
 
     //constant for separate namespace on code
     var SEPARATE_NAMESPACE = '\\';
@@ -472,10 +472,10 @@ define ( function ( require , exports , module ) {
         if ( this.namespacePath.length > 0 ) {
             namespace = this.namespacePath.join ( SEPARATE_NAMESPACE );
         }
-        if (this.namespace) {
-            this.namespace += this.docblockAnnotationsGenerator.getSubfolder('namespace');
+        if (namespace) {
+            namespace += this.docblockAnnotationsGenerator.getSubfolder('namespace');
 
-            codeWriter.writeLine("namespace " + this.namespace + ";");
+            codeWriter.writeLine ( "namespace " + namespace + ";" );
         }
     };
 
@@ -705,9 +705,9 @@ define ( function ( require , exports , module ) {
         var i , len , terms = [];
 
         // Doc
-        var doc = elem.documentation.trim() + this.docblockAnnotationsGenerator.createClassAnnotations(elem);
-        if (ProjectManager.getProject().author && ProjectManager.getProject().author.length > 0) {
-            doc += "\n@author " + ProjectManager.getProject().author;
+        var doc = elem.documentation.trim () + this.docblockAnnotationsGenerator.createClassAnnotations (elem);
+        if ( ProjectManager.getProject ().author && ProjectManager.getProject ().author.length > 0 ) {
+            doc += "\n@author " + ProjectManager.getProject ().author;
         }
         this.writeDoc ( codeWriter , doc , options );
 
