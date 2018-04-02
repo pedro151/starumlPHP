@@ -35,7 +35,7 @@ define ( function ( require , exports , module ) {
         UML            = app.getModule ( "uml/UML" );
 
     var CodeGenUtils = require("CodeGenUtils");
-    var DoctrineAnnotationsGenerator = require("DoctrineAnnotationsGenerator");
+    var DocblockAnnotationsGenerator = require("Doctrine/DocblockAnnotationsGenerator");
 
     //constant for separate namespace on code
     var SEPARATE_NAMESPACE = '\\';
@@ -57,7 +57,7 @@ define ( function ( require , exports , module ) {
         this.basePath = basePath;
 
         /** @member {Object} */
-        this.doctrineAnnotationsGenerator = new DoctrineAnnotationsGenerator.DoctrineAnnotationsGenerator(options.phpDoctrineAnnotations);
+        this.docblockAnnotationsGenerator = new DocblockAnnotationsGenerator.DocblockAnnotationsGenerator(options.phpDoctrineDocblockAnnotations);
     }
 
     /**
@@ -92,7 +92,7 @@ define ( function ( require , exports , module ) {
 
         // Package
         if ( elem instanceof type.UMLPackage ) {
-            fullPath = path + "/" + elem.name + this.doctrineAnnotationsGenerator.getSubfolder();
+            fullPath = path + "/" + elem.name + this.docblockAnnotationsGenerator.getSubfolder();
             directory = FileSystem.getDirectoryForPath ( fullPath );
             directory.create ( function ( err , stat ) {
                 if ( !err ) {
@@ -162,7 +162,6 @@ define ( function ( require , exports , module ) {
      * @param options
      */
     PHPCodeGenerator.prototype.writeClasses = function ( codeWriter , elem , options ) {
-
         // AnnotationType
         if ( elem instanceof type.UMLClass && elem.stereotype === "annotationType" ) {
             this.writeAnnotationType ( codeWriter , elem , options );
@@ -305,7 +304,7 @@ define ( function ( require , exports , module ) {
                 if ( _namespace !== "" ) {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
                 }
-                _type = _namespace + this.doctrineAnnotationsGenerator.getSubfolder('namespace') + SEPARATE_NAMESPACE + _type;
+                _type = _namespace + this.docblockAnnotationsGenerator.getSubfolder('namespace') + SEPARATE_NAMESPACE + _type;
             }
         } else {
             if ( elem.type instanceof type.UMLModelElement && elem.type.name.length > 0 ) {
@@ -474,7 +473,7 @@ define ( function ( require , exports , module ) {
             namespace = this.namespacePath.join ( SEPARATE_NAMESPACE );
         }
         if (this.namespace) {
-            this.namespace += this.doctrineAnnotationsGenerator.getSubfolder('namespace');
+            this.namespace += this.docblockAnnotationsGenerator.getSubfolder('namespace');
 
             codeWriter.writeLine("namespace " + this.namespace + ";");
         }
@@ -488,7 +487,7 @@ define ( function ( require , exports , module ) {
      * @param {Object} options
      */
     PHPCodeGenerator.prototype.writePackageImports = function (codeWriter, elem, options) {
-        var i, imports = this.doctrineAnnotationsGenerator.getImports();
+        var i, imports = this.docblockAnnotationsGenerator.getImports();
 
         if (imports.length > 0) {
             codeWriter.writeLine();
@@ -542,7 +541,7 @@ define ( function ( require , exports , module ) {
         if (elem.name.length > 0) {
             var terms = [];
             // doc
-            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.doctrineAnnotationsGenerator.getPropertyAnnotations(elem, this.getType(elem), association);
+            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.docblockAnnotationsGenerator.addPropertyAnnotations(elem, this.getType(elem), association);
 
             this.writeDoc(codeWriter, doc, options);
 
@@ -706,7 +705,7 @@ define ( function ( require , exports , module ) {
         var i , len , terms = [];
 
         // Doc
-        var doc = elem.documentation.trim() + this.doctrineAnnotationsGenerator.getClassAnnotations(elem);
+        var doc = elem.documentation.trim() + this.docblockAnnotationsGenerator.createClassAnnotations(elem);
         if (ProjectManager.getProject().author && ProjectManager.getProject().author.length > 0) {
             doc += "\n@author " + ProjectManager.getProject().author;
         }

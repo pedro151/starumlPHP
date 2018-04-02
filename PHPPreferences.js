@@ -75,15 +75,15 @@ define(function (require, exports, module) {
             type: "Check",
             default: true
         },
-        "php.doc.phpDoctrineAnnotations": {
-            text: "Doctrine annotations",
-            description: "Generate Doctrine 2 ORM docblock annotations.",
+        "php.doc.phpDoctrineDocblockAnnotations": {
+            text: "Doctrine ORM Docblock annotations",
+            description: "Generate Doctrine 2 ORM Docblock annotations.\nNote: set the property types with the one defined by Doctrine.",
             type: "Dropdown",
-            default: 0,
+            default: 'none',
             options: [
-                {value: 0, text: "None"},
-                {value: 1, text: "Doctrine"},
-                {value: 2, text: "Symfony (DoctrineBundle)"},
+                {value: 'none', text: "None"},
+                {value: 'default', text: "Default"},
+                {value: 'sfBundle', text: "Symfony (DoctrineBundle)"},
             ]
         },
     };
@@ -102,7 +102,7 @@ define(function (require, exports, module) {
             interfaceExtension : PreferenceManager.get("php.syntax.interfaceExtension"),
 
             phpDoc       : PreferenceManager.get("php.doc.phpDoc"),
-            phpDoctrineAnnotations : parseInt(PreferenceManager.get("php.doc.phpDoctrineAnnotations"))
+            phpDoctrineDocblockAnnotations : PreferenceManager.get("php.doc.phpDoctrineDocblockAnnotations")
         };
     }
 
