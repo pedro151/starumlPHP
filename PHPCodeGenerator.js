@@ -35,6 +35,7 @@ define ( function ( require , exports , module ) {
         UML            = app.getModule ( "uml/UML" );
 
     var CodeGenUtils = require ( "CodeGenUtils" );
+    var DocblockAnnotationsGenerator = require ( "Doctrine/DocblockAnnotationsGenerator" );
 
     //constant for separate namespace on code
     var SEPARATE_NAMESPACE = '\\';
@@ -45,8 +46,9 @@ define ( function ( require , exports , module ) {
      *
      * @param {type.UMLPackage} baseModel
      * @param {string} basePath generated files and directories to be placed
+     * @param {Object} options
      */
-    function PHPCodeGenerator ( baseModel , basePath ) {
+    function PHPCodeGenerator ( baseModel , basePath, options ) {
 
         /** @member {type.Model} */
         this.baseModel = baseModel;
@@ -54,6 +56,8 @@ define ( function ( require , exports , module ) {
         /** @member {string} */
         this.basePath = basePath;
 
+        /** @member {Object} */
+        this.docblockAnnotationsGenerator = new DocblockAnnotationsGenerator.DocblockAnnotationsGenerator( options.phpDoctrineDocblockAnnotations );
     }
 
     /**
@@ -88,6 +92,7 @@ define ( function ( require , exports , module ) {
 
         // Package
         if ( elem instanceof type.UMLPackage ) {
+            fullPath = path + "/" + elem.name + this.docblockAnnotationsGenerator.getSubfolder ();
             directory = FileSystem.getDirectoryForPath ( fullPath );
             directory.create ( function ( err , stat ) {
                 if ( !err ) {
@@ -101,7 +106,7 @@ define ( function ( require , exports , module ) {
                 } else {
                     result.reject ( err );
                 }
-            } );
+            });
         } else if ( this.isClass ( elem , type ) ) {
             this.generateClass ( elem , path , options , result );
         } else {
@@ -133,12 +138,13 @@ define ( function ( require , exports , module ) {
         var codeWriter ,
             file ,
             classExtension = "";
-
+        
         codeWriter = new CodeGenUtils.CodeWriter ( this.getIndentString ( options ) );
         codeWriter.writeLine ( "<?php\n" );
         this.writePackageDeclaration ( codeWriter , elem );
         codeWriter.writeLine ();
         codeWriter.addSection ( "uses" , true );
+        this.writePackageImports ( codeWriter, elem, options );
         this.writeClasses ( codeWriter , elem , options );
         if ( elem instanceof type.UMLClass && !elem.stereotype === "annotationType" ) {
             classExtension = options.classExtension;
@@ -156,7 +162,6 @@ define ( function ( require , exports , module ) {
      * @param options
      */
     PHPCodeGenerator.prototype.writeClasses = function ( codeWriter , elem , options ) {
-
         // AnnotationType
         if ( elem instanceof type.UMLClass && elem.stereotype === "annotationType" ) {
             this.writeAnnotationType ( codeWriter , elem , options );
@@ -299,7 +304,7 @@ define ( function ( require , exports , module ) {
                 if ( _namespace !== "" ) {
                     _namespace = SEPARATE_NAMESPACE + _namespace;
                 }
-                _type = _namespace + SEPARATE_NAMESPACE + _type;
+                _type = _namespace + this.docblockAnnotationsGenerator.getSubfolder ( "namespace" ) + SEPARATE_NAMESPACE + _type;
             }
         } else {
             if ( elem.type instanceof type.UMLModelElement && elem.type.name.length > 0 ) {
@@ -467,8 +472,29 @@ define ( function ( require , exports , module ) {
         if ( this.namespacePath.length > 0 ) {
             namespace = this.namespacePath.join ( SEPARATE_NAMESPACE );
         }
-        if ( namespace ) {
+        if (namespace) {
+            namespace += this.docblockAnnotationsGenerator.getSubfolder ( "namespace" );
+
             codeWriter.writeLine ( "namespace " + namespace + ";" );
+        }
+    };
+
+    /**
+     * Write Package Namespaces imports
+     * 
+     * @param {StringWriter} codeWriter
+     * @param {type.Model} elem
+     * @param {Object} options
+     */
+    PHPCodeGenerator.prototype.writePackageImports = function (codeWriter, elem, options) {
+        var i, imports = this.docblockAnnotationsGenerator.getImports ();
+
+        if (imports.length > 0) {
+            codeWriter.writeLine ();
+
+            for ( i = 0; i < imports.length; i++ ) {
+                codeWriter.writeLineInSection ( "use " + imports[i] + ";", "uses" );
+            }
         }
     };
 
@@ -509,13 +535,17 @@ define ( function ( require , exports , module ) {
      * @param {StringWriter} codeWriter
      * @param {type.Model} elem
      * @param {Object} options
+     * @param {type.UMLAssociation} association
      */
-    PHPCodeGenerator.prototype.writeMemberVariable = function ( codeWriter , elem , options ) {
+    PHPCodeGenerator.prototype.writeMemberVariable = function ( codeWriter, elem, options, association ) {
         if ( elem.name.length > 0 ) {
             var terms = [];
             // doc
-            var doc   = "@var " + this.getDocumentType ( elem ) + " " + elem.documentation.trim ();
-            this.writeDoc ( codeWriter , doc , options );
+            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim();
+            
+            doc += this.docblockAnnotationsGenerator.addPropertyAnnotations(elem, this.getType(elem), association);
+
+            this.writeDoc(codeWriter, doc, options);
 
             // modifiers const
             if ( elem.isFinalSpecification === true || elem.isLeaf === true ) {
@@ -677,7 +707,7 @@ define ( function ( require , exports , module ) {
         var i , len , terms = [];
 
         // Doc
-        var doc = elem.documentation.trim ();
+        var doc = elem.documentation.trim () + this.docblockAnnotationsGenerator.createClassAnnotations (elem);
         if ( ProjectManager.getProject ().author && ProjectManager.getProject ().author.length > 0 ) {
             doc += "\n@author " + ProjectManager.getProject ().author;
         }
@@ -730,10 +760,10 @@ define ( function ( require , exports , module ) {
         for ( i = 0, len = associations.length; i < len; i++ ) {
             var asso = associations[ i ];
             if ( asso.end1.reference === elem && asso.end2.navigable === true ) {
-                this.writeMemberVariable ( codeWriter , asso.end2 , options );
+                this.writeMemberVariable ( codeWriter , asso.end2 , options, asso );
                 codeWriter.writeLine ();
             } else if ( asso.end2.reference === elem && asso.end1.navigable === true ) {
-                this.writeMemberVariable ( codeWriter , asso.end1 , options );
+                this.writeMemberVariable ( codeWriter , asso.end1 , options, asso );
                 codeWriter.writeLine ();
             }
         }
@@ -950,7 +980,7 @@ define ( function ( require , exports , module ) {
      * @param {Object} options
      */
     function generate ( baseModel , basePath , options ) {
-        var phpCodeGenerator = new PHPCodeGenerator ( baseModel , basePath );
+        var phpCodeGenerator = new PHPCodeGenerator ( baseModel , basePath, options );
         return phpCodeGenerator.generate ( baseModel , basePath , options );
     }
 

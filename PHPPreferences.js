@@ -35,6 +35,17 @@ define(function (require, exports, module) {
             type: "Check",
             default: true
         },
+        "php.gen.phpDoc.phpDoctrineDocblockAnnotations": {
+            text: "Doctrine ORM Docblock annotations",
+            description: "Generate Doctrine 2 ORM Docblock annotations.\nNote: set the property types with the one defined by Doctrine.",
+            type: "Dropdown",
+            default: 'none',
+            options: [
+                {value: 'none', text: "None"},
+                {value: 'default', text: "Default"},
+                {value: 'sfBundle', text: "Symfony (DoctrineBundle)"},
+            ]
+        },
         "php.gen.phpStrictMode": {
             text: "Strict Mode",
             description: "Generate PHP Strict Mode.",
@@ -80,6 +91,7 @@ define(function (require, exports, module) {
     function getGenOptions() {
         return {
             phpDoc       : PreferenceManager.get("php.gen.phpDoc"),
+            phpDoctrineDocblockAnnotations : PreferenceManager.get("php.gen.phpDoc.phpDoctrineDocblockAnnotations"),
             useTab        : PreferenceManager.get("php.gen.useTab"),
             indentSpaces  : PreferenceManager.get("php.gen.indentSpaces"),
             classExtension : PreferenceManager.get("php.gen.classExtension"),

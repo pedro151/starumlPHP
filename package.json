@@ -4,11 +4,17 @@
     "description": "PHP code generation.",
     "homepage": "https://github.com/pedro151/starumlPHP",
     "keywords": ["php"],
-    "version": "1.0.0",
+    "version": "1.1.0",
     "author": {
         "name": "Pedro Alarcão",
         "url": "https://github.com/pedro151"
     },
+    "contributors": [
+        {
+            "name": "Bastien Gatellier",
+            "url": "https://github.com/bgatellier"
+        }
+    ],
     "license": "MIT",
     "engines": {
         "staruml": ">=2.0.0"
