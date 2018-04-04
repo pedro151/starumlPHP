@@ -40,18 +40,13 @@ define(function (require, exports, module) {
      * @return {string}   
      */
     DocblockAnnotationsGenerator.prototype.addPropertyAnnotations = function (elem, type, association) {
-        var annotations;
-
-        if ('none' !== this.type) {
-            // 'undefined' means that the element is an object, and consequently an association
-            if ('undefined' === typeof(association)) {
-                annotations = this.createBasicAnnotations(elem, type);
-            } else {
-                annotations = this.createAssociationAnnotations(elem, association);
-            }
+        if ('none' === this.type) {
+            return '';
         }
 
-        return annotations;
+        return 'undefined' === typeof(association)
+            ? this.createBasicAnnotations(elem, type)
+            : this.createAssociationAnnotations(elem, association);
     };
 
     /**
@@ -136,6 +131,10 @@ define(function (require, exports, module) {
      * @return {string}     
      */
     DocblockAnnotationsGenerator.prototype.createClassAnnotations = function (elem) {
+        if ('none' === this.type) {
+            return '';
+        }
+
         return [
             'Table(name="' + elem.name.toSnakeCase() + '")',
             'Entity'
@@ -154,13 +153,11 @@ define(function (require, exports, module) {
      * @return {string} 
      */
     DocblockAnnotationsGenerator.prototype.getSubfolder = function (type) {
-        var level = '';
-
-        if ('sfBundle' === this.type) {
-            level = ('namespace' === type ? NAMESPACE_SEPARATOR : '/') + 'Entity';
+        if ('sfBundle' !== this.type) {
+            return '';
         }
 
-        return level;
+        return ('namespace' === type ? NAMESPACE_SEPARATOR : '/') + 'Entity';
     };
 
     /**

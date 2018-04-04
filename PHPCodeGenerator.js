@@ -541,7 +541,9 @@ define ( function ( require , exports , module ) {
         if ( elem.name.length > 0 ) {
             var terms = [];
             // doc
-            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim() + this.docblockAnnotationsGenerator.addPropertyAnnotations(elem, this.getType(elem), association);
+            var doc = "@var " + this.getType(elem) + " " + elem.documentation.trim();
+            
+            doc += this.docblockAnnotationsGenerator.addPropertyAnnotations(elem, this.getType(elem), association);
 
             this.writeDoc(codeWriter, doc, options);
 
